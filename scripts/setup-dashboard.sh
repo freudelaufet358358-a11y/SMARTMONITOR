@@ -78,6 +78,13 @@ install -m 0755 "$REPO_ROOT/scripts/kiosk.sh" "$KIOSK_HOME/kiosk.sh"
 sed -i "s|@DASHBOARD_URL@|$DASHBOARD_URL|g" "$KIOSK_HOME/kiosk.sh"
 sudo chown "$KIOSK_USER:$KIOSK_USER" "$KIOSK_HOME/kiosk.sh"
 
+# Openbox の安全設定を更新 (Ctrl+W 等の無効化 + 右クリック救出メニュー)
+log "Openbox の rc.xml / menu.xml を更新中..."
+mkdir -p "$KIOSK_HOME/.config/openbox"
+install -m 0644 "$REPO_ROOT/config/openbox/rc.xml"   "$KIOSK_HOME/.config/openbox/rc.xml"
+install -m 0644 "$REPO_ROOT/config/openbox/menu.xml" "$KIOSK_HOME/.config/openbox/menu.xml"
+sudo chown -R "$KIOSK_USER:$KIOSK_USER" "$KIOSK_HOME/.config/openbox"
+
 cat <<EOF
 
 ==================== ダッシュボード設定完了 ====================

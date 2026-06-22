@@ -145,3 +145,13 @@ sudo systemctl reboot
 | 画面が一定時間で暗くなる | `kiosk.sh` の `xset` 行が効いているか確認。GNOME の場合は別途電源設定も無効化 |
 | Wayland のままで wmctrl が効かない | `echo $XDG_SESSION_TYPE` が `x11` か確認。`custom.conf` の `WaylandEnable=false` と Openbox セッション選択を再確認 |
 | Chrome が「正常に終了しませんでした」を出す | 起動フラグ `--disable-session-crashed-bubble` を確認。`~/.config/google-chrome/Default/Preferences` の `exit_type` を `Normal` に直す |
+| **画面が真っ黒で操作不能 / キオスクが消えた** | `Ctrl+Alt+F3` で仮想コンソール(TTY)へ。ログイン後 `sudo systemctl restart gdm3` でキオスク復帰。GUI に戻るのは `Ctrl+Alt+F1`(または F7) |
+| **通常の Ubuntu(GNOME) で入りたい** | TTY で `sudo sed -i 's/^AutomaticLoginEnable=true/AutomaticLoginEnable=false/' /etc/gdm3/custom.conf` と `sudo rm -f /var/lib/AccountsService/users/$USER` → `sudo systemctl restart gdm3` → GDM の歯車⚙で「Ubuntu on Xorg」を選択 |
+
+### キオスクの堅牢化（Ctrl+W 対策）
+
+`scripts/kiosk.sh` は **Chrome が閉じても自動で再起動するループ**になっている。
+さらに `config/openbox/rc.xml` で **Ctrl+W / Ctrl+Q / Alt+F4 を無効化**し、
+**Ctrl+Alt+T でターミナル**、**右クリックで救出メニュー**（ターミナル/再起動/ログアウト）
+を出せるようにしている。これらは `install.sh` または `setup-dashboard.sh` で配置される。
+適用後は誤操作でキオスクが閉じても自動復帰し、真っ黒のまま操作不能になることはない。

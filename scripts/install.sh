@@ -128,9 +128,11 @@ install -m 0755 "$REPO_ROOT/scripts/uxplay.sh"        "$CAST_DIR/uxplay.sh"
 install -m 0755 "$REPO_ROOT/scripts/shanocast.sh"     "$CAST_DIR/shanocast.sh"
 install -m 0755 "$REPO_ROOT/scripts/raise-on-cast.sh" "$CAST_DIR/raise-on-cast.sh"
 
-log "Openbox autostart を配置中..."
+log "Openbox autostart / rc.xml / menu.xml を配置中..."
 mkdir -p "$KIOSK_HOME/.config/openbox"
 install -m 0644 "$REPO_ROOT/config/openbox/autostart" "$KIOSK_HOME/.config/openbox/autostart"
+install -m 0644 "$REPO_ROOT/config/openbox/rc.xml"     "$KIOSK_HOME/.config/openbox/rc.xml"
+install -m 0644 "$REPO_ROOT/config/openbox/menu.xml"   "$KIOSK_HOME/.config/openbox/menu.xml"
 
 log "Home Assistant の compose / 設定例を配置中..."
 mkdir -p "$HA_DIR/config"

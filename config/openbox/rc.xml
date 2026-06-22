@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_config xmlns="http://openbox.org/3.4/rc">
+  <resistance>
+    <strength>10</strength>
+    <screen_edge_strength>20</screen_edge_strength>
+  </resistance>
+  <focus>
+    <focusNew>yes</focusNew>
+    <followMouse>no</followMouse>
+  </focus>
+  <placement>
+    <policy>Smart</policy>
+    <center>yes</center>
+  </placement>
+  <theme>
+    <name>Clearlooks</name>
+    <titleLayout>NLIMC</titleLayout>
+    <keepBorder>yes</keepBorder>
+  </theme>
+  <desktops>
+    <number>1</number>
+    <firstdesk>1</firstdesk>
+  </desktops>
+
+  <keyboard>
+    <!-- キオスクを誤って閉じる操作を無効化 (Execute true = 何もしない) -->
+    <keybind key="C-w"><action name="Execute"><command>true</command></action></keybind>
+    <keybind key="C-q"><action name="Execute"><command>true</command></action></keybind>
+    <keybind key="A-F4"><action name="Execute"><command>true</command></action></keybind>
+    <keybind key="C-A-q"><action name="Execute"><command>true</command></action></keybind>
+
+    <!-- 救出用: Ctrl+Alt+T でターミナル -->
+    <keybind key="C-A-t"><action name="Execute"><command>xterm</command></action></keybind>
+    <!-- 救出用: Ctrl+Alt+K でダッシュボードを再起動 (ループが拾って復帰) -->
+    <keybind key="C-A-k">
+      <action name="Execute"><command>pkill -f google-chrome</command></action>
+    </keybind>
+  </keyboard>
+
+  <mouse>
+    <context name="Desktop">
+      <!-- 右クリックで救出メニュー -->
+      <mousebind button="Right" action="Press">
+        <action name="ShowMenu"><menu>root-menu</menu></action>
+      </mousebind>
+    </context>
+    <context name="Root">
+      <mousebind button="Right" action="Press">
+        <action name="ShowMenu"><menu>root-menu</menu></action>
+      </mousebind>
+    </context>
+  </mouse>
+
+  <menu>
+    <file>menu.xml</file>
+    <hideDelay>200</hideDelay>
+  </menu>
+
+  <applications/>
+</openbox_config>

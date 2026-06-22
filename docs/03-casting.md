@@ -59,6 +59,19 @@ mkdir -p ~/casting
 chmod +x ~/casting/uxplay.sh
 ```
 
+### ミラーリング停止時にウィンドウを消す
+
+UxPlay **1.45 以降は「ミラーリングを停止」すると映像ウィンドウを自動で閉じる**
+（`uxplay.sh` は `-nc` を付けないので既定で閉じる）。停止後もウィンドウ（最後のフレーム）が
+残る場合は、**apt の UxPlay が 1.45 より古い**。最新版に更新する:
+
+```bash
+bash scripts/update-uxplay.sh     # ソースから 1.45+ をビルド導入
+pkill -f uxplay                   # 受信を再起動して反映 (autostart/サービスが再起動)
+```
+
+> ビルドには libplist 2.3 以上が必要。古い Ubuntu でビルドに失敗する場合は OS 更新が必要。
+
 ハード支援デコードで不安定な場合の切り分け：
 
 ```bash

@@ -48,13 +48,19 @@ log "ログインセッション: $SESS （タスクバー/Dock のある通常�
 
 # ---- 2. 自動ログイン + セッション固定 --------------------------------------
 log "GDM 自動ログインと既定セッションを設定中..."
+# Xorg セッションを選んだときだけ Wayland を無効化する。
+# (Wayland セッションしか無いのに WaylandEnable=false にすると起動できず GUI に入れなくなる)
+WAYLAND_LINE=""
+case "$SESS" in
+  *xorg*) WAYLAND_LINE="WaylandEnable=false" ;;
+esac
 sudo cp -n /etc/gdm3/custom.conf "/etc/gdm3/custom.conf.bak.$(date +%s)" 2>/dev/null || true
-sudo tee /etc/gdm3/custom.conf >/dev/null <<EOF
-[daemon]
-WaylandEnable=false
-AutomaticLoginEnable=true
-AutomaticLogin=$KIOSK_USER
-EOF
+{
+  echo "[daemon]"
+  [ -n "$WAYLAND_LINE" ] && echo "$WAYLAND_LINE"
+  echo "AutomaticLoginEnable=true"
+  echo "AutomaticLogin=$KIOSK_USER"
+} | sudo tee /etc/gdm3/custom.conf >/dev/null
 sudo install -d /var/lib/AccountsService/users
 sudo tee "/var/lib/AccountsService/users/$KIOSK_USER" >/dev/null <<EOF
 [User]

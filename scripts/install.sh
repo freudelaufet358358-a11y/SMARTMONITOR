@@ -88,6 +88,14 @@ if ! command -v uxplay >/dev/null 2>&1; then
   fi
 fi
 command -v uxplay >/dev/null 2>&1 && log "UxPlay: $(command -v uxplay)" || warn "UxPlay 未導入。"
+# 1.45 未満だとミラーリング停止時にウィンドウが残る。古ければ案内。
+if command -v uxplay >/dev/null 2>&1; then
+  uxver="$(uxplay -v 2>&1 | grep -oE '[0-9]+\.[0-9]+' | head -1)"
+  if [ -n "$uxver" ] && [ "$(printf '%s\n1.45\n' "$uxver" | sort -V | head -1)" != "1.45" ]; then
+    warn "UxPlay $uxver は古く、ミラーリング停止後も窓が残ります。"
+    warn "  -> bash scripts/update-uxplay.sh で 1.45+ に更新してください。"
+  fi
+fi
 
 # =============================================================================
 # 3. Google Chrome (deb)

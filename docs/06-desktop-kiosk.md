@@ -50,3 +50,19 @@ sudo systemctl reboot
 | Cast の前面化が効かない | セッションが Xorg か確認（`echo $XDG_SESSION_TYPE` が `x11`）。Wayland なら `ubuntu-xorg` を導入 |
 | 自動起動が動かない | `~/.config/autostart/smartmonitor-*.desktop` の `Exec` パスと実行権限を確認 |
 | そもそも画面が出ない | `Ctrl+Alt+F3` で TTY → `sudo systemctl restart gdm3` |
+| **GUI デスクトップに全く戻れない** | `Ctrl+Alt+F3` で TTY ログイン → `bash scripts/recover-desktop.sh`。自動ログイン/強制セッション/キオスク自動起動を解除して通常のログイン画面に戻す。セッション一覧が空なら GNOME 未導入 → `sudo apt install -y ubuntu-desktop` |
+
+## 復旧（recover-desktop.sh）
+
+GNOME 構成にしてから GUI に入れなくなった場合の戻し方:
+
+```bash
+# Ctrl+Alt+F3 で TTY に入りログイン
+cd ~/smartmonitor
+git pull origin claude/quirky-albattani-qe4lkd
+bash scripts/recover-desktop.sh
+```
+
+これで自動ログインと「強制セッション固定」を解除し、キオスク自動起動を一時無効化して
+通常の GDM ログイン画面に戻す。利用可能なセッションと GNOME 導入状況も表示する。
+ログイン画面の歯車 ⚙ でセッション（Ubuntu / Ubuntu on Xorg）を選んで入り直せる。

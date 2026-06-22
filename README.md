@@ -158,7 +158,8 @@ config/                       （参考）HA 用 compose / Lovelace 雛形
 1. [`docs/01-setup-vm.md`](docs/01-setup-vm.md) — Ubuntu VM の自動ログイン・キオスク・WM
 2. [`docs/03-casting.md`](docs/03-casting.md) — UxPlay + shanocast 導入と前面化
 3. [`docs/05-standalone-dashboard.md`](docs/05-standalone-dashboard.md) — **HA 不要ダッシュボード（採用中）**
-4. （参考）[`docs/02-home-assistant.md`](docs/02-home-assistant.md) / [`docs/04-dashboard.md`](docs/04-dashboard.md) — HA 版（不採用だが残置）
+4. [`docs/06-desktop-kiosk.md`](docs/06-desktop-kiosk.md) — **GNOMEデスクトップ土台のキオスク（採用中・脱出可）**
+5. （参考）[`docs/02-home-assistant.md`](docs/02-home-assistant.md) / [`docs/04-dashboard.md`](docs/04-dashboard.md) — HA 版（不採用だが残置）
 
 ## 前提・注意
 

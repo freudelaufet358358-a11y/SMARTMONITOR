@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=SmartMonitor AirPlay (UxPlay)
+Comment=AirPlay 受信
+Exec=@HOME@/casting/uxplay.sh
+Terminal=false
+X-GNOME-Autostart-enabled=true

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=SmartMonitor Cast (shanocast)
+Comment=Google Cast 受信
+Exec=@HOME@/casting/shanocast.sh
+Terminal=false
+X-GNOME-Autostart-enabled=true

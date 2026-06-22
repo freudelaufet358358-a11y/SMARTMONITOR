@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=SmartMonitor Cast Raiser
+Comment=キャスト受信ウィンドウを前面化
+Exec=@HOME@/casting/raise-on-cast.sh
+Terminal=false
+X-GNOME-Autostart-enabled=true

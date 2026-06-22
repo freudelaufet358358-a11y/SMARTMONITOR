@@ -14,6 +14,14 @@ xset -dpms
 # マウスカーソルを 1 秒操作なしで隠す
 pgrep -x unclutter >/dev/null || unclutter -idle 1 &
 
+# GNOME の画面ブランク/ロック/自動サスペンドを無効化 (モニター用途)
+if command -v gsettings >/dev/null 2>&1; then
+  gsettings set org.gnome.desktop.session idle-delay 0 2>/dev/null || true
+  gsettings set org.gnome.desktop.screensaver lock-enabled false 2>/dev/null || true
+  gsettings set org.gnome.desktop.screensaver idle-activation-enabled false 2>/dev/null || true
+  gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing' 2>/dev/null || true
+fi
+
 # 表示先 (ダッシュボード) が応答するまで待つ
 echo "[kiosk] waiting for dashboard at $URL ..."
 until curl -sf -o /dev/null "$URL"; do
@@ -30,8 +38,9 @@ while true; do
     sed -i 's/"exit_type":"[^"]*"/"exit_type":"Normal"/; s/"exited_cleanly":false/"exited_cleanly":true/' "$PREF" 2>/dev/null || true
   fi
 
+  # --start-fullscreen: 全画面表示だが F11 / Super キーでデスクトップへ脱出可能
   google-chrome \
-    --kiosk \
+    --start-fullscreen \
     --noerrdialogs \
     --disable-infobars \
     --disable-session-crashed-bubble \

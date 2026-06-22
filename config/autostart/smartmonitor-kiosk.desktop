@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=SmartMonitor Dashboard (Kiosk)
+Comment=ダッシュボードを全画面表示 (F11/Super で脱出可)
+Exec=@HOME@/kiosk.sh
+Terminal=false
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=3

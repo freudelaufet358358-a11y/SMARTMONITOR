@@ -1,0 +1,67 @@
+# =============================================================================
+# SMARTMONITOR — configuration.yaml 反映例
+#
+#   ※ これは「例」です。HA が初回起動時に生成する実 configuration.yaml に対して、
+#     必要なブロックだけをコピーして追記してください。
+#   ※ 追記前に前提統合を入れること:
+#       - feedparser  ... HACS でインストール (RSS 表示用)
+#       - SwitchBot Cloud / カレンダー ... GUI から統合追加
+#   ※ entity_id (sensor.xxx / climate.xxx) は実環境で変わります。
+#     「開発者ツール → 状態」で実名を確認して置き換えてください。
+#   ※ 反映後:  sudo docker restart homeassistant
+# =============================================================================
+
+# --- 既定の構成 (HA 生成済みのものはそのまま) -------------------------------
+default_config:
+
+# =============================================================================
+# 1. RSS ニュース (feedparser / HACS)
+# =============================================================================
+sensor:
+  - platform: feedparser
+    name: "NHK 主要ニュース"
+    feed_url: "https://www.nhk.or.jp/rss/news/cat0.xml"
+    date_format: "%m/%d %H:%M"
+    show_topn: 8
+    inclusions:
+      - title
+      - link
+      - published
+
+  # --- 電力(W)しか取れない機種向け: kWh 積算を生成する ---
+  # SwitchBot Cloud の Plug が kWh を直接出す場合は不要。
+  - platform: integration
+    source: sensor.plug_power          # ← プラグの電力センサー(W)に置換
+    name: plug_energy                  # → sensor.plug_energy (kWh) を生成
+    unit_prefix: k
+    round: 3
+    method: trapezoidal
+
+# =============================================================================
+# 2. 電気代 (本日 / 今月)  ※ 単価は契約に合わせる (例 31 円/kWh)
+# =============================================================================
+utility_meter:
+  plug_daily_energy:
+    source: sensor.plug_energy         # ← kWh センサー (上で生成 or 機種が直接提供)
+    cycle: daily
+  plug_monthly_energy:
+    source: sensor.plug_energy
+    cycle: monthly
+
+template:
+  - sensor:
+      - name: "電気代 本日"
+        unique_id: smartmonitor_cost_today
+        unit_of_measurement: "円"
+        state: >
+          {{ (states('sensor.plug_daily_energy') | float(0) * 31) | round(1) }}
+      - name: "電気代 今月"
+        unique_id: smartmonitor_cost_month
+        unit_of_measurement: "円"
+        state: >
+          {{ (states('sensor.plug_monthly_energy') | float(0) * 31) | round(0) }}
+
+# =============================================================================
+# 3. (任意) ローカルカレンダーを使う場合は GUI から統合追加でOK。
+#    Google Calendar も GUI(OAuth)。ここに YAML 記述は不要。
+# =============================================================================

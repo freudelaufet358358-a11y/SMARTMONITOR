@@ -2,6 +2,12 @@
 
 スマートモニターに表示するダッシュボードを作る。`docs/02` で各統合が入っている前提。
 
+> **📋 雛形あり：完成形に近い YAML は [`config/lovelace/dashboard.yaml`](../config/lovelace/dashboard.yaml)、
+> 時間割の HTML は [`config/lovelace/timetable.md`](../config/lovelace/timetable.md)。**
+> インストーラ実行時は `~/homeassistant/lovelace-samples/` にも併置される。
+> 「生の構成エディタ」に貼り付けてから entity 名を実環境に合わせるのが最短。
+> ダッシュボード作成は GUI 操作のため手動（`install.sh` の対象外）。
+
 ## 0. カスタムカードの導入（HACS）
 
 時計や見やすいカレンダーには HACS のカードを使う。HACS → フロントエンド で検索して

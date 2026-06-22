@@ -1,0 +1,15 @@
+# Openbox autostart — SMARTMONITOR
+# ~/.config/openbox/autostart に配置される (install.sh が実施)。
+# 起動順: キャスト受信 -> 前面化監視 -> キオスク(Chrome)
+
+# AirPlay 受信 (UxPlay)
+"$HOME/casting/uxplay.sh" &
+
+# Google Cast 受信 (shanocast / Docker)
+"$HOME/casting/shanocast.sh" &
+
+# キャスト受信ウィンドウの前面化監視
+"$HOME/casting/raise-on-cast.sh" &
+
+# ダッシュボード (Chrome キオスク)
+"$HOME/kiosk.sh" &

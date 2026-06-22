@@ -1,0 +1,105 @@
+# =============================================================================
+# SMARTMONITOR — Lovelace ダッシュボード サンプル
+#   設定 → ダッシュボード → 新規 → 編集 → 「生の構成エディタ」に貼り付ける。
+#
+#   ※ entity_id (sensor.xxx / climate.xxx / calendar.xxx) は実環境で変わる。
+#     「開発者ツール → 状態」で実名を確認して置き換えること。
+#   ※ custom:clock-weather-card / custom:atomic-calendar-revive は HACS で導入要。
+# =============================================================================
+title: SmartMonitor
+views:
+  - title: Home
+    path: home
+    type: sections
+    max_columns: 3
+    sections:
+      # ── 時計 + 天気 ──────────────────────────────────────────
+      - type: grid
+        cards:
+          - type: custom:clock-weather-card
+            entity: weather.home          # 天気エンティティ (無ければ後述の代替へ)
+            locale: ja
+            time_format: "24"
+            date_pattern: "yyyy年M月d日 (EEE)"
+            hide_today_section: false
+            hide_forecast_section: false
+
+      # ── カレンダー (予定) ────────────────────────────────────
+      - type: grid
+        cards:
+          - type: custom:atomic-calendar-revive
+            name: 予定
+            entities:
+              - entity: calendar.your_google_calendar   # ← docs/02 で追加したカレンダー
+            maxDaysToShow: 7
+            showLocation: false
+            showMonthlyMode: false
+
+      # ── 大学の時間割 (UNIPA は手動) ─────────────────────────
+      - type: grid
+        cards:
+          - type: markdown
+            title: 時間割
+            # config/lovelace/timetable.md の HTML をここに貼り付ける
+            content: |
+              <table style="width:100%; text-align:center; border-collapse:collapse;">
+                <tr><th></th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th></tr>
+                <tr><td><b>1</b></td><td>線形代数</td><td></td><td>英語</td><td>物理</td><td></td></tr>
+                <tr><td><b>2</b></td><td>プログラミング</td><td>微積分</td><td></td><td>物理演習</td><td>体育</td></tr>
+                <tr><td><b>3</b></td><td></td><td>情報倫理</td><td>実験</td><td></td><td>ゼミ</td></tr>
+                <tr><td><b>4</b></td><td>第二外国語</td><td></td><td>実験</td><td>統計</td><td></td></tr>
+                <tr><td><b>5</b></td><td></td><td></td><td></td><td></td><td></td></tr>
+              </table>
+
+      # ── 室内環境 (SwitchBot) ─────────────────────────────────
+      - type: grid
+        cards:
+          - type: entities
+            title: 室内環境
+            entities:
+              - entity: sensor.living_temperature   # ← 温湿度計の温度
+                name: 室温
+              - entity: sensor.living_humidity      # ← 温湿度計の湿度
+                name: 湿度
+          - type: thermostat
+            entity: climate.living_aircon           # ← Hub 経由のエアコン
+
+      # ── 電力 / 電気代 (SwitchBot プラグ) ─────────────────────
+      - type: grid
+        cards:
+          - type: gauge
+            entity: sensor.plug_power               # ← プラグの電力(W)
+            name: 消費電力
+            unit: W
+            min: 0
+            max: 1500
+            severity:
+              green: 0
+              yellow: 800
+              red: 1200
+          - type: entities
+            title: 電気代
+            entities:
+              - entity: sensor.電気代_本日
+                name: 本日
+              - entity: sensor.電気代_今月
+                name: 今月
+
+      # ── ニュース (RSS / feedparser) ─────────────────────────
+      - type: grid
+        cards:
+          - type: markdown
+            title: ニュース
+            content: >
+              {% for item in state_attr('sensor.nhk_主要ニュース', 'entries') or [] %}
+
+              - [{{ item.title }}]({{ item.link }})
+
+              {% endfor %}
+
+# -----------------------------------------------------------------------------
+# 代替メモ:
+#   ・天気エンティティが無い場合: clock-weather-card の代わりに HACS の
+#     "digital-clock" や markdown + now() で時刻のみ表示してもよい。
+#   ・カレンダーカードは標準の "calendar" タイプでも可 (custom 不要)。
+# -----------------------------------------------------------------------------

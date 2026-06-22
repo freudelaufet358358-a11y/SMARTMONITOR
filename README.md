@@ -59,12 +59,75 @@ Home Assistant は **今の Ubuntu VM 内に Docker で同居**させる。
 > △困難なのは「スマホの純正 Cast ボタンによる直接受信」だけ。実用上は AirPlay と
 > shanocast、YouTube の TV コードリンクで埋められる。
 
+## クイックスタート（押すだけインストール）
+
+GPU パススルー済みの Ubuntu Desktop VM に、**キオスク用ユーザでログインした状態**で
+以下を実行すると、依存関係（Openbox / Chrome / UxPlay / Docker / Home Assistant /
+shanocast）の導入・配置・自動ログイン設定・HA 起動までを一括で行う。
+
+```bash
+git clone https://github.com/freudelaufet358358-a11y/smartmonitor.git
+cd smartmonitor
+bash scripts/install.sh
+```
+
+実行後の流れ（インストーラ末尾にも表示される）:
+
+1. ブラウザで `http://localhost:8123` を開き HA 管理ユーザを作成
+2. HACS / 統合（SwitchBot Cloud・カレンダー・feedparser）を追加 → `docs/02`
+3. `lovelace-samples/dashboard.yaml` をダッシュボードに貼り付け → `docs/04`
+4. `sudo systemctl reboot` で自動ログイン + キオスク表示を確認
+
+環境変数で挙動を変えられる（例）:
+
+```bash
+KIOSK_USER=kiosk \
+DASHBOARD_URL=http://localhost:8123/lovelace/home \
+SETUP_AUTOLOGIN=no \
+bash scripts/install.sh
+```
+
+| 変数 | 既定 | 説明 |
+|------|------|------|
+| `KIOSK_USER` | 実行ユーザ | キオスク/自動ログイン対象ユーザ |
+| `DASHBOARD_URL` | `http://localhost:8123` | Chrome が開く URL |
+| `SHANOCAST_IMAGE` | `ghcr.io/rgerganov/shanocast:latest` | Cast 受信の Docker イメージ |
+| `SETUP_AUTOLOGIN` | `yes` | `no` で GDM 自動ログイン設定をスキップ |
+
+## リポジトリ構成
+
+```
+README.md
+docs/                         手順書（背景説明つき）
+  01-setup-vm.md              VM キオスク化
+  02-home-assistant.md        HA + 統合
+  03-casting.md               AirPlay / Cast
+  04-dashboard.md             ダッシュボード
+scripts/                      install.sh が配置する実スクリプト
+  install.sh                  ★押すだけインストーラ
+  kiosk.sh                    Chrome キオスク起動
+  uxplay.sh                   AirPlay 受信
+  shanocast.sh                Cast 受信(Docker)
+  raise-on-cast.sh            受信ウィンドウ前面化
+config/
+  homeassistant/
+    docker-compose.yml        HA コンテナ定義
+    configuration.example.yaml SwitchBot/RSS/電気代の反映例
+  openbox/autostart           Openbox 起動項目
+  lovelace/
+    dashboard.yaml            ダッシュボード雛形
+    timetable.md              時間割（手動）HTML
+```
+
 ## ドキュメント
 
 1. [`docs/01-setup-vm.md`](docs/01-setup-vm.md) — Ubuntu VM の自動ログイン・キオスク・WM
 2. [`docs/02-home-assistant.md`](docs/02-home-assistant.md) — Docker 版 HA 導入 + SwitchBot / カレンダー / RSS
 3. [`docs/03-casting.md`](docs/03-casting.md) — UxPlay + shanocast 導入と前面化
 4. [`docs/04-dashboard.md`](docs/04-dashboard.md) — Lovelace ダッシュボード（時計 / 時間割 / SwitchBot）
+
+> 手動で 1 ステップずつ進めたい場合は `docs/` を順に読む。`install.sh` は
+> これらの手順のうち「依存導入・ファイル配置・自動ログイン設定・HA 起動」を自動化したもの。
 
 ## 前提・注意
 

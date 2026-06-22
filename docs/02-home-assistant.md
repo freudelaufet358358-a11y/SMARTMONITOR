@@ -3,6 +3,14 @@
 今の Ubuntu VM 内に **HA Container（Docker 版）** を入れる。
 Ubuntu Desktop に Supervised を入れるのは不安定なので採用しない。
 
+> **🚀 自動化：この章の手順 1〜2（Docker 導入・HA 起動）は
+> [`scripts/install.sh`](../scripts/install.sh) が実施し、HA を起動済みにする。**
+> compose は [`config/homeassistant/docker-compose.yml`](../config/homeassistant/docker-compose.yml)、
+> RSS/電気代の反映例は [`config/homeassistant/configuration.example.yaml`](../config/homeassistant/configuration.example.yaml)
+> （インストーラが `~/homeassistant/` 配下に併置する）。
+> **手順 3 以降（HACS / 各統合の追加・configuration.yaml への反映）は GUI 操作のため手動。**
+> 下記に沿って進める。
+
 ## 1. Docker 導入
 
 ```bash

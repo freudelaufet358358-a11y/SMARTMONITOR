@@ -6,6 +6,11 @@ GPU パススルーで HDMI 出力済みの Ubuntu Desktop VM を、電源を入
 > 前提：ウィンドウの前面化（キャスト受信時）に `wmctrl`/`xdotool` を使うため、
 > **X11 セッションを使う**（Wayland は無効化する）。
 
+> **🚀 自動化：この章の手順 1〜8 は [`scripts/install.sh`](../scripts/install.sh) が一括実行する。**
+> 配置される実ファイルは [`scripts/kiosk.sh`](../scripts/kiosk.sh)・
+> [`config/openbox/autostart`](../config/openbox/autostart)。
+> 以下は「何を・なぜ」やっているかの解説。手動でやる場合のみ順に実施すればよい。
+
 ## 0. パッケージ更新
 
 ```bash

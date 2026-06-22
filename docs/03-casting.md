@@ -2,6 +2,12 @@
 
 ダッシュボードを全画面表示したまま、スマホ/PC から映像を投げたら前面に出るようにする。
 
+> **🚀 自動化：依存導入とスクリプト配置は [`scripts/install.sh`](../scripts/install.sh) が実施。**
+> 実ファイルは [`scripts/uxplay.sh`](../scripts/uxplay.sh)・
+> [`scripts/shanocast.sh`](../scripts/shanocast.sh)・
+> [`scripts/raise-on-cast.sh`](../scripts/raise-on-cast.sh)。
+> 以下は仕組みの解説と、実機で `wmctrl -l` を見ながら行う**前面化の最終調整**手順。
+
 | 方式 | ソフト | 投げ元 |
 |------|--------|--------|
 | AirPlay | UxPlay | iPhone / iPad / Mac（画面ミラー・動画） |

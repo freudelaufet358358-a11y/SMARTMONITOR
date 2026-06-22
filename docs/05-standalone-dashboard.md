@@ -1,11 +1,11 @@
 # 05. スタンドアロンダッシュボード（Home Assistant 不要・採用中）
 
-Home Assistant を使わず、時計・天気・カレンダー・時間割・ニュースを表示する
+Home Assistant を使わず、時計・天気・時間割・ニュースを表示する
 軽量ダッシュボード。**追加の pip 依存ゼロ**（Python 標準ライブラリ + ブラウザのみ）。
 
 - 配信: `python3 -m http.server`（systemd で常駐）
 - データ: `fetch_data.py` が 15 分ごとに天気(Open-Meteo)と RSS を取得 → `data.json`
-- 時計・時間割・カレンダー描画: ブラウザ側 `app.js`
+- 時計（フリップ）・時間割描画: ブラウザ側 `app.js`
 
 > SwitchBot の室温/湿度/消費電力/電気代は HA 必須のため**取りやめ**。
 > 復活させたくなったら `docs/02`・`docs/04`（HA 版）に戻る。
@@ -53,7 +53,6 @@ sudo systemctl reboot
     { "name": "NHK科学", "url": "https://www.nhk.or.jp/rss/news/cat3.xml" }
   ],
   "news_max": 10,
-  "calendar_embed_url": "",         // ↓ §4 参照（空ならカレンダー枠は非表示）
   "timetable": {                    // ↓ §3 参照（UNIPA は手動）
     "days": ["月","火","水","木","金"],
     "periods": ["1","2","3","4","5"],
@@ -71,7 +70,7 @@ sudo systemctl reboot
 編集後の反映:
 
 ```bash
-# 時計/時間割/カレンダー(config.json)は次回ブラウザ更新で反映（最大1時間 or 再起動で即時）
+# 時計/時間割(config.json)は次回ブラウザ更新で反映（最大1時間 or 再起動で即時）
 # 天気/RSS(feeds)を今すぐ取り直す:
 SMARTMONITOR_WWW=~/smartmonitor-dashboard/www \
   python3 ~/smartmonitor-dashboard/fetch_data.py
@@ -87,19 +86,7 @@ UNIPA は ICS/iCal 出力が無いため、`config.json` の `timetable.cells` �
 
 ダッシュボードは**今日の曜日の列を自動ハイライト**する（月〜金）。
 
-## 4. カレンダー（任意・Google カレンダー埋め込み）
-
-`calendar_embed_url` に Google カレンダーの**公開埋め込み URL**を入れると予定枠が出る。
-
-1. Google カレンダー → 対象カレンダーの設定 → 「予定のアクセス権限」で
-   **一般公開して誰でも利用できるようにする**（プライバシーに注意）
-2. 「カレンダーの統合」→ **埋め込みコード**の `src="..."` の URL をコピー
-3. `config.json` の `calendar_embed_url` に貼る
-
-> 非公開のまま使いたい場合、この方式では表示できない。その場合はカレンダー枠を
-> 使わず時間割のみで運用するか、HA 版（`docs/04`）の OAuth 連携に戻る。
-
-## 5. 運用 / トラブルシュート
+## 4. 運用 / トラブルシュート
 
 | 操作 | コマンド |
 |------|----------|
@@ -116,7 +103,7 @@ UNIPA は ICS/iCal 出力が無いため、`config.json` の `timetable.cells` �
 | 時間割の今日強調がずれる | 端末のタイムゾーン（`Asia/Tokyo`）を確認 |
 | 変更が反映されない | キャッシュ無効化のため配信再起動 + キオスク再読込（再起動が確実） |
 
-## 6. （任意）Home Assistant を停止する
+## 5. （任意）Home Assistant を停止する
 
 HA はもう使わないので、リソースを空けたい場合は停止してよい（データは消えない）:
 

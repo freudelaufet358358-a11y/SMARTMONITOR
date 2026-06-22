@@ -120,14 +120,6 @@ function renderTimetable(cfg) {
   document.getElementById("timetable").innerHTML = html;
 }
 
-// ---- カレンダー (任意) ----
-function renderCalendar(cfg) {
-  const url = (cfg.calendar_embed_url || "").trim();
-  if (!url) return;
-  document.getElementById("calendar-card").hidden = false;
-  document.getElementById("calendar-frame").src = url;
-}
-
 // ---- 天気 ----
 function renderWeather(w) {
   const el = document.getElementById("weather");
@@ -178,7 +170,6 @@ async function loadConfig() {
     const cfg = await (await fetch("config.json", { cache: "no-store" })).json();
     document.title = cfg.title || "SmartMonitor";
     renderTimetable(cfg);
-    renderCalendar(cfg);
   } catch (e) {
     console.error("config.json load failed", e);
   }

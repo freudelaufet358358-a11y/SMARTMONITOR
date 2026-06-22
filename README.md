@@ -5,7 +5,7 @@ Proxmox 上の Ubuntu VM に内蔵 GPU（Intel UHD 630）をパススルーし�
 
 > **方針変更（採用中の構成）**: Home Assistant は**使わない**。
 > 当初 HA で実装予定だった機能のうち、HA が必須な **SwitchBot 室温/湿度/消費電力/電気代は取りやめ**。
-> 残り（時計・天気・カレンダー・時間割・ニュース）は **HA 不要の軽量スタンドアロン
+> 残り（時計・天気・時間割・ニュース）は **HA 不要の軽量スタンドアロン
 > ダッシュボード**（静的 HTML + `python3 -m http.server` + 標準ライブラリの取得スクリプト）
 > で実装する。AirPlay/Cast 受信は元から HA 非依存でそのまま使用。詳細 → [`docs/05-standalone-dashboard.md`](docs/05-standalone-dashboard.md)。
 > （`docs/02`・`docs/04` の HA 版手順は参考として残置）
@@ -49,9 +49,8 @@ Proxmox 上の Ubuntu VM に内蔵 GPU（Intel UHD 630）をパススルーし�
 
 | 機能 | 可否 | 実装方法 |
 |------|:---:|----------|
-| 時計・日付 | ◎ | ブラウザ側 JS（`app.js`） |
+| 時計・日付 | ◎ | ブラウザ側 JS（`app.js`）、フリップクロック表示 |
 | 天気 | ◎ | Open-Meteo（APIキー不要）を `fetch_data.py` が取得 |
-| カレンダー | ○ | Google カレンダー公開埋め込み URL（`config.json` に設定すれば表示） |
 | 大学の時間割 (UNIPA) | ○ | **UNIPA は ICS 出力なし** → `config.json` に手書き → 表で表示 |
 | 最新ニュース (RSS) | ◎ | `fetch_data.py`（標準ライブラリ）が定期取得 |
 | AirPlay 受信 | ◎ | UxPlay（UHD 630 を VA-API でハード支援デコード） |
@@ -109,7 +108,7 @@ git pull origin claude/quirky-albattani-qe4lkd
 ### インストール後の流れ
 
 1. `setup-dashboard.sh` 実行で `http://localhost:8080` にダッシュボードが立つ
-2. `~/smartmonitor-dashboard/www/config.json` を編集（時間割・RSS・地名・カレンダー埋め込み）→ `docs/05`
+2. `~/smartmonitor-dashboard/www/config.json` を編集（時間割・RSS・地名）→ `docs/05`
 3. `sudo systemctl reboot` で自動ログイン + キオスク表示を確認
 4. AirPlay/Cast は `install.sh` で導入済み。使い方/前面化調整は `docs/03`
 
@@ -146,7 +145,7 @@ scripts/
   uxplay.sh / shanocast.sh / raise-on-cast.sh   キャスト受信
 dashboard/                    スタンドアロンダッシュボード本体（採用中）
   index.html / style.css / app.js
-  config.json                 時間割・RSS・天気・カレンダー埋め込み（編集して使う）
+  config.json                 時間割・RSS・天気（編集して使う）
 serve/
   fetch_data.py               天気+RSS を取得し data.json を生成（標準ライブラリのみ）
   smartmonitor-dashboard.service   配信(:8080) systemd ユニット

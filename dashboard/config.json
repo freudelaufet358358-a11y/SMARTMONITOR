@@ -11,7 +11,6 @@
     { "name": "NHK科学", "url": "https://www.nhk.or.jp/rss/news/cat3.xml" }
   ],
   "news_max": 10,
-  "calendar_embed_url": "",
   "timetable": {
     "days": ["月", "火", "水", "木", "金"],
     "periods": ["1", "2", "3", "4", "5"],

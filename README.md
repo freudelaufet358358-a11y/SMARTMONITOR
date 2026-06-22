@@ -65,13 +65,36 @@ GPU パススルー済みの Ubuntu Desktop VM に、**キオスク用ユーザ�
 以下を実行すると、依存関係（Openbox / Chrome / UxPlay / Docker / Home Assistant /
 shanocast）の導入・配置・自動ログイン設定・HA 起動までを一括で行う。
 
+> 現在の開発コードはブランチ `claude/quirky-albattani-qe4lkd` 上にある（main 未マージ）。
+> **必ず `-b` でブランチを指定**して取得すること。
+
+### Ubuntu でコードを取得する
+
 ```bash
-git clone https://github.com/freudelaufet358358-a11y/smartmonitor.git
+# git が無ければ入れる
+sudo apt update && sudo apt install -y git
+
+# 作業ブランチを指定してクローン
+git clone -b claude/quirky-albattani-qe4lkd \
+  https://github.com/freudelaufet358358-a11y/smartmonitor.git
+
 cd smartmonitor
+
+# 押すだけインストーラ実行（キオスク用ユーザでログインした状態で）
 bash scripts/install.sh
 ```
 
-実行後の流れ（インストーラ末尾にも表示される）:
+最新を取り込む（クローン済みの場合、リポジトリ内で実行）:
+
+```bash
+git pull origin claude/quirky-albattani-qe4lkd
+```
+
+> プライベートリポジトリで認証を求められたら、HTTPS はパスワード欄に GitHub の
+> Personal Access Token (PAT) を入れる。SSH 鍵を使う場合は
+> `git@github.com:freudelaufet358358-a11y/smartmonitor.git` を `-b` 付きでクローンする。
+
+### インストール後の流れ（インストーラ末尾にも表示される）
 
 1. ブラウザで `http://localhost:8123` を開き HA 管理ユーザを作成
 2. HACS / 統合（SwitchBot Cloud・カレンダー・feedparser）を追加 → `docs/02`

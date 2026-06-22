@@ -11,16 +11,31 @@
     { "name": "NHK科学", "url": "https://www.nhk.or.jp/rss/news/cat3.xml" }
   ],
   "news_max": 10,
-  "calendar_embed_url": "",
   "timetable": {
     "days": ["月", "火", "水", "木", "金"],
-    "periods": ["1", "2", "3", "4", "5"],
-    "cells": {
-      "1": ["線形代数", "", "英語", "物理", ""],
-      "2": ["プログラミング", "微積分", "", "物理演習", "体育"],
-      "3": ["", "情報倫理", "実験", "", "ゼミ"],
-      "4": ["第二外国語", "", "実験", "統計", ""],
-      "5": ["", "", "", "", ""]
-    }
+    "period_times": {
+      "1": ["08:50", "10:20"],
+      "2": ["10:30", "12:00"],
+      "3": ["13:00", "14:30"],
+      "4": ["14:40", "16:10"],
+      "5": ["16:20", "17:50"],
+      "6": ["18:00", "19:30"],
+      "7": ["19:40", "21:10"]
+    },
+    "slots": [
+      { "day": "月", "period": 1, "title": "線形代数", "room": "A301", "code": "MAT101" },
+      { "day": "月", "period": 2, "title": "プログラミング", "room": "情報実習室", "code": "INF110" },
+      { "day": "月", "period": 4, "title": "第二外国語", "room": "C204", "code": "LNG120" },
+      { "day": "火", "period": 2, "title": "微積分", "room": "A301", "code": "MAT102" },
+      { "day": "火", "period": 3, "title": "情報倫理", "room": "B105", "code": "INF130" },
+      { "day": "水", "period": 1, "title": "英語", "room": "C201", "code": "ENG101" },
+      { "day": "水", "period": 3, "title": "実験", "room": "実験棟1", "code": "PHY150" },
+      { "day": "水", "period": 4, "title": "実験", "room": "実験棟1", "code": "PHY150" },
+      { "day": "木", "period": 1, "title": "物理", "room": "A205", "code": "PHY101" },
+      { "day": "木", "period": 2, "title": "物理演習", "room": "A205", "code": "PHY102" },
+      { "day": "木", "period": 4, "title": "統計", "room": "B203", "code": "MAT140" },
+      { "day": "金", "period": 2, "title": "体育", "room": "体育館", "code": "PED101" },
+      { "day": "金", "period": 3, "title": "ゼミ", "room": "研究室", "code": "SEM200" }
+    ]
   }
 }

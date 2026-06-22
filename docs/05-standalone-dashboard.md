@@ -1,11 +1,11 @@
 # 05. スタンドアロンダッシュボード（Home Assistant 不要・採用中）
 
-Home Assistant を使わず、時計・天気・カレンダー・時間割・ニュースを表示する
+Home Assistant を使わず、時計・天気・時間割・ニュースを表示する
 軽量ダッシュボード。**追加の pip 依存ゼロ**（Python 標準ライブラリ + ブラウザのみ）。
 
 - 配信: `python3 -m http.server`（systemd で常駐）
 - データ: `fetch_data.py` が 15 分ごとに天気(Open-Meteo)と RSS を取得 → `data.json`
-- 時計・時間割・カレンダー描画: ブラウザ側 `app.js`
+- 時計・時間割描画: ブラウザ側 `app.js`
 
 > SwitchBot の室温/湿度/消費電力/電気代は HA 必須のため**取りやめ**。
 > 復活させたくなったら `docs/02`・`docs/04`（HA 版）に戻る。
@@ -53,17 +53,20 @@ sudo systemctl reboot
     { "name": "NHK科学", "url": "https://www.nhk.or.jp/rss/news/cat3.xml" }
   ],
   "news_max": 10,
-  "calendar_embed_url": "",         // ↓ §4 参照（空ならカレンダー枠は非表示）
   "timetable": {                    // ↓ §3 参照（UNIPA は手動）
     "days": ["月","火","水","木","金"],
-    "periods": ["1","2","3","4","5"],
-    "cells": {
-      "1": ["線形代数","","英語","物理",""],
-      "2": ["プログラミング","微積分","","物理演習","体育"],
-      "3": ["","情報倫理","実験","","ゼミ"],
-      "4": ["第二外国語","","実験","統計",""],
-      "5": ["","","","",""]
-    }
+    "period_times": {               // 時限→[開始,終了]（既定は山口県立大学）
+      "1": ["08:50","10:20"],
+      "2": ["10:30","12:00"],
+      "3": ["13:00","14:30"],
+      "4": ["14:40","16:10"],
+      "5": ["16:20","17:50"]
+    },
+    "slots": [                      // コマ単位で記述（空きコマは書かない）
+      { "day":"月","period":1,"title":"線形代数","room":"A301","code":"MAT101" },
+      { "day":"水","period":1,"title":"英語","room":"C201","code":"ENG101" },
+      { "day":"金","period":3,"title":"ゼミ","room":"研究室","code":"SEM200" }
+    ]
   }
 }
 ```
@@ -71,7 +74,7 @@ sudo systemctl reboot
 編集後の反映:
 
 ```bash
-# 時計/時間割/カレンダー(config.json)は次回ブラウザ更新で反映（最大1時間 or 再起動で即時）
+# 時計/時間割(config.json)は次回ブラウザ更新で反映（最大1時間 or 再起動で即時）
 # 天気/RSS(feeds)を今すぐ取り直す:
 SMARTMONITOR_WWW=~/smartmonitor-dashboard/www \
   python3 ~/smartmonitor-dashboard/fetch_data.py
@@ -79,27 +82,23 @@ SMARTMONITOR_WWW=~/smartmonitor-dashboard/www \
 
 ## 3. 大学の時間割（UNIPA は手動）
 
-UNIPA は ICS/iCal 出力が無いため、`config.json` の `timetable.cells` に手書きする。
+UNIPA は ICS/iCal 出力が無いため、`config.json` の `timetable` に手書きする。
+データモデルは [UNIPA_CLAWL](https://github.com/freudelaufet358358-a11y/unipa_clawl)
+のコマ式（`day`/`period`/`title`/`room`/`code`）を参考にしている。
 
-- `days` … 表示する曜日（左→右）
-- `periods` … 時限（上→下）
-- `cells["時限"]` … その時限の各曜日の授業名（`days` と同じ並び、空きは `""`）
+- `days` … 表示する曜日（左→右）。`slots` に「土」のコマがあれば土曜列を自動追加。
+- `period_times` … 時限→`[開始, 終了]`（省略時は山口県立大学の時刻を使用）
+- `slots[]` … 1 コマ＝1 オブジェクト。`day`（曜日）・`period`（時限）・`title`（科目名）必須。
+  `room`（教室）・`code`（科目コード）は任意。空きコマは書かない。
 
-ダッシュボードは**今日の曜日の列を自動ハイライト**する（月〜金）。
+ダッシュボードは以下を自動ハイライトする:
 
-## 4. カレンダー（任意・Google カレンダー埋め込み）
+- **今日の曜日の列**（月〜土）
+- **いま開講中のコマ**（`period_times` の時間帯に現在時刻が入るコマ）
 
-`calendar_embed_url` に Google カレンダーの**公開埋め込み URL**を入れると予定枠が出る。
+> 旧形式の `periods` + `cells` グリッドも後方互換で読めるが、`slots` 形式を推奨。
 
-1. Google カレンダー → 対象カレンダーの設定 → 「予定のアクセス権限」で
-   **一般公開して誰でも利用できるようにする**（プライバシーに注意）
-2. 「カレンダーの統合」→ **埋め込みコード**の `src="..."` の URL をコピー
-3. `config.json` の `calendar_embed_url` に貼る
-
-> 非公開のまま使いたい場合、この方式では表示できない。その場合はカレンダー枠を
-> 使わず時間割のみで運用するか、HA 版（`docs/04`）の OAuth 連携に戻る。
-
-## 5. 運用 / トラブルシュート
+## 4. 運用 / トラブルシュート
 
 | 操作 | コマンド |
 |------|----------|
@@ -116,7 +115,7 @@ UNIPA は ICS/iCal 出力が無いため、`config.json` の `timetable.cells` �
 | 時間割の今日強調がずれる | 端末のタイムゾーン（`Asia/Tokyo`）を確認 |
 | 変更が反映されない | キャッシュ無効化のため配信再起動 + キオスク再読込（再起動が確実） |
 
-## 6. （任意）Home Assistant を停止する
+## 5. （任意）Home Assistant を停止する
 
 HA はもう使わないので、リソースを空けたい場合は停止してよい（データは消えない）:
 

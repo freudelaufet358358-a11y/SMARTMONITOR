@@ -1,6 +1,6 @@
 // SmartMonitor standalone dashboard (Home Assistant 不要)
 // - 時計: クライアントで毎秒更新
-// - 時間割 / カレンダー: config.json から描画
+// - 時間割: config.json から描画（UNIPA_CLAWL のコマ式モデルを参考）
 // - 天気 / ニュース: fetch_data.py が生成する data.json から描画
 
 const TZ = "Asia/Tokyo";
@@ -88,19 +88,60 @@ function tickClock() {
     }).format(now);
 }
 
-// 月=1..金=5 を時間割の列インデックス(0..4)へ。土日は -1 (強調なし)。
-function todayColumn() {
-  const dow = new Date().getDay(); // 0=日,1=月,...
-  return dow >= 1 && dow <= 5 ? dow - 1 : -1;
+// ---- 時間割 ----
+// 曜日ラベル（config.json の days は短縮形「月」「火」… を想定）
+const DOW_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
+
+// 時限→開始/終了時刻の既定値（山口県立大学 授業時間割。config.json の
+// timetable.period_times で上書き可能）。UNIPA_CLAWL から移植。
+const DEFAULT_PERIOD_TIMES = {
+  1: ["08:50", "10:20"],
+  2: ["10:30", "12:00"],
+  3: ["13:00", "14:30"],
+  4: ["14:40", "16:10"],
+  5: ["16:20", "17:50"],
+  6: ["18:00", "19:30"],
+  7: ["19:40", "21:10"],
+};
+
+// 今日の曜日ラベル（"月"〜"日"）
+function todayLabel() {
+  return DOW_LABELS[new Date().getDay()];
 }
 
-// ---- 時間割 ----
+// 現在「授業時間内」のコマ {day, period} を返す（休憩中・時間外は null）。
+function currentSlotKey(periodTimes) {
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat(LOCALE, {
+    hour: "2-digit", minute: "2-digit", hour12: false, timeZone: TZ,
+  }).formatToParts(now);
+  const get = (t) => (parts.find((p) => p.type === t) || {}).value || "00";
+  const hm = `${get("hour")}:${get("minute")}`;
+  const day = todayLabel();
+  for (const p of Object.keys(periodTimes)) {
+    const pt = periodTimes[p];
+    if (pt && pt[0] <= hm && hm <= pt[1]) return { day, period: Number(p) };
+  }
+  return null;
+}
+
 function renderTimetable(cfg) {
   const tt = cfg.timetable || {};
-  const days = tt.days || [];
-  const periods = tt.periods || [];
-  const cells = tt.cells || {};
-  const todayCol = todayColumn();
+  const baseDays = tt.days || ["月", "火", "水", "木", "金"];
+  const periodTimes = { ...DEFAULT_PERIOD_TIMES, ...(tt.period_times || {}) };
+  // 旧形式（cells グリッド）も読めるよう slots へ正規化する。
+  const slots = normalizeSlots(tt, baseDays);
+
+  // 土曜開講のコマがあるときだけ土曜列を出す（データを握りつぶさない）。
+  const days = slots.some((s) => s.day === "土") && !baseDays.includes("土")
+    ? [...baseDays, "土"]
+    : baseDays;
+
+  const todayCol = days.indexOf(todayLabel());
+  const cur = currentSlotKey(periodTimes);
+  const maxPeriod = slots.length
+    ? Math.max(...slots.map((s) => s.period))
+    : Math.max(...Object.keys(periodTimes).map(Number).filter((n) => n <= 5));
 
   let html = "<tr><th></th>";
   days.forEach((d, i) => {
@@ -108,24 +149,46 @@ function renderTimetable(cfg) {
   });
   html += "</tr>";
 
-  periods.forEach((p) => {
-    html += `<tr><td class="period">${p}</td>`;
-    const row = cells[p] || [];
-    days.forEach((_, i) => {
-      html += `<td class="${i === todayCol ? "today" : ""}">${row[i] || ""}</td>`;
+  for (let p = 1; p <= maxPeriod; p++) {
+    const pt = periodTimes[p];
+    const time = pt ? `<span class="tt-time">${pt[0]}〜${pt[1]}</span>` : "";
+    html += `<tr><td class="period">${p}<br>${time}</td>`;
+    days.forEach((day, i) => {
+      const cell = slots.find((s) => s.day === day && s.period === p);
+      const isToday = i === todayCol;
+      // 「いま開講中」は実際に授業があるコマだけ強調（空き時間は強調しない）。
+      const isNow = cell && cur && cur.day === day && cur.period === p;
+      const cls = [isToday ? "today" : "", isNow ? "now" : ""]
+        .filter(Boolean).join(" ");
+      if (!cell) { html += `<td class="${cls}"></td>`; return; }
+      html += `<td class="${cls}">
+        <div class="tt-title">${cell.title}</div>
+        ${cell.room ? `<div class="tt-room">${cell.room}</div>` : ""}
+        ${cell.code ? `<div class="tt-code">${cell.code}</div>` : ""}
+      </td>`;
     });
     html += "</tr>";
-  });
+  }
 
   document.getElementById("timetable").innerHTML = html;
 }
 
-// ---- カレンダー (任意) ----
-function renderCalendar(cfg) {
-  const url = (cfg.calendar_embed_url || "").trim();
-  if (!url) return;
-  document.getElementById("calendar-card").hidden = false;
-  document.getElementById("calendar-frame").src = url;
+// 新形式 slots[{day,period,title,room,code}] をそのまま、旧形式
+// {days, periods, cells} はコマ式へ変換して返す（後方互換）。
+function normalizeSlots(tt, days) {
+  if (Array.isArray(tt.slots)) {
+    return tt.slots
+      .filter((s) => s && s.title)
+      .map((s) => ({ ...s, period: Number(s.period) }));
+  }
+  const cells = tt.cells || {};
+  const out = [];
+  Object.keys(cells).forEach((p) => {
+    (cells[p] || []).forEach((title, i) => {
+      if (title) out.push({ day: days[i], period: Number(p), title });
+    });
+  });
+  return out;
 }
 
 // ---- 天気 ----
@@ -173,12 +236,12 @@ function renderNews(items, updated) {
 }
 
 // ---- データ読み込み ----
+let _cfg = null;
 async function loadConfig() {
   try {
-    const cfg = await (await fetch("config.json", { cache: "no-store" })).json();
-    document.title = cfg.title || "SmartMonitor";
-    renderTimetable(cfg);
-    renderCalendar(cfg);
+    _cfg = await (await fetch("config.json", { cache: "no-store" })).json();
+    document.title = _cfg.title || "SmartMonitor";
+    renderTimetable(_cfg);
   } catch (e) {
     console.error("config.json load failed", e);
   }
@@ -200,8 +263,10 @@ setInterval(tickClock, 1000);
 
 loadConfig();
 loadData();
-setInterval(loadData, 5 * 60 * 1000);   // 5分ごとにデータ更新
-setInterval(loadConfig, 60 * 60 * 1000); // 1時間ごとに設定/時間割の今日強調を更新
+setInterval(loadData, 5 * 60 * 1000);    // 5分ごとにデータ更新
+setInterval(loadConfig, 60 * 60 * 1000); // 1時間ごとに設定を取り直す
+// 1分ごとに時間割を再描画（今日列・授業中コマのハイライトを最新化）
+setInterval(() => { if (_cfg) renderTimetable(_cfg); }, 60 * 1000);
 
 // 焼き付き/メモリ対策で6時間ごとに再読み込み
 setTimeout(() => location.reload(), 6 * 60 * 60 * 1000);

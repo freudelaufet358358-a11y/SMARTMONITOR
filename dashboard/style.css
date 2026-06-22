@@ -128,7 +128,7 @@ body { display: flex; flex-direction: column; }
 .weather .forecast .day .e { font-size: 40px; line-height: 1.2; }
 .weather .forecast .day .t { color: var(--muted); font-size: 20px; }
 
-/* ===== メイン: 左=時間割 / 右=カレンダー+ニュース ===== */
+/* ===== メイン: 左=時間割 / 右=ニュース ===== */
 .grid {
   flex: 1 1 auto;
   display: flex;
@@ -164,10 +164,9 @@ body { display: flex; flex-direction: column; }
   gap: 28px;
   min-height: 0;
 }
-.calendar { flex: 1; }       /* 非表示(hidden)時はニュースが右側を占有 */
 .news { flex: 1; }
 
-/* 時間割テーブル */
+/* 時間割テーブル（UNIPA_CLAWL のコマ式表示を参考） */
 #timetable {
   width: 100%;
   height: 100%;
@@ -177,24 +176,48 @@ body { display: flex; flex-direction: column; }
 #timetable th, #timetable td {
   border: 1px solid var(--border);
   text-align: center;
-  padding: 10px 6px;
+  vertical-align: top;
+  padding: 10px 8px;
   font-size: 24px;
   word-break: break-word;
 }
-#timetable th { color: var(--muted); font-weight: 600; }
-#timetable td.period { color: var(--muted); font-weight: 700; width: 64px; }
+#timetable th { color: var(--muted); font-weight: 600; vertical-align: middle; }
+#timetable td.period {
+  color: var(--muted);
+  font-weight: 700;
+  width: 96px;
+  vertical-align: middle;
+  line-height: 1.3;
+}
+#timetable td.period .tt-time {
+  display: block;
+  font-size: 16px;
+  font-weight: 400;
+  opacity: .8;
+  margin-top: 2px;
+}
+#timetable .tt-title { font-weight: 600; line-height: 1.25; }
+#timetable .tt-room {
+  font-size: 18px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+#timetable .tt-code {
+  font-size: 16px;
+  color: var(--border);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
 #timetable .today { background: var(--today); }
 #timetable td:empty::after { content: "—"; color: var(--border); }
-
-/* カレンダー */
-.calendar iframe {
-  flex: 1;
-  width: 100%;
-  min-height: 0;
-  border: 0;
-  border-radius: 10px;
-  background: #fff;
+/* 現在開講中のコマを強調 */
+#timetable td.now {
+  background: var(--accent);
+  border-color: var(--accent);
 }
+#timetable td.now .tt-title,
+#timetable td.now .tt-room,
+#timetable td.now .tt-code { color: #0b1117; }
 
 /* ニュース */
 .news ul { list-style: none; flex: 1; min-height: 0; overflow: hidden; }

@@ -84,10 +84,9 @@ cat <<EOF
 配信中:  http://localhost:8080   (systemd: smartmonitor-dashboard)
 データ:  $WWW_DIR/data.json は 15 分ごとに更新 (smartmonitor-fetch.timer)
 編集:    $WWW_DIR/config.json
-           - timetable ... 時間割 (UNIPA は手動)
+           - timetable ... 時間割 (slots にコマを記述。UNIPA は手動)
            - feeds ......... RSS フィード
            - weather ....... 緯度経度/地名
-           - calendar_embed_url ... Google カレンダー公開埋め込みURL (任意)
          編集後の反映:  systemctl restart smartmonitor-dashboard  (HTML側は再読込)
                         手動取得:  SMARTMONITOR_WWW=$WWW_DIR python3 $DASH_DIR/fetch_data.py
 

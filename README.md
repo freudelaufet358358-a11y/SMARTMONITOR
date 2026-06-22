@@ -6,7 +6,7 @@ Proxmox 上の Ubuntu VM に内蔵 GPU（Intel UHD 630）をパススルーし�
 > **方針変更（採用中の構成）**: Home Assistant は**使わない**。
 > 当初 HA で実装予定だった機能のうち、HA が必須な **SwitchBot 室温/湿度/消費電力/電気代は取りやめ**。
 > 残り（時計・天気・時間割・ニュース）は **HA 不要の軽量スタンドアロン
-> ダッシュボード**（静的 HTML + `python3 -m http.server` + 標準ライブラリの取得スクリプト）
+> ダッシュボード**（HTML + 標準ライブラリの配信/取得スクリプト `server.py`・`fetch_data.py`）
 > で実装する。AirPlay/Cast 受信は元から HA 非依存でそのまま使用。詳細 → [`docs/05-standalone-dashboard.md`](docs/05-standalone-dashboard.md)。
 > （`docs/02`・`docs/04` の HA 版手順は参考として残置）
 
@@ -38,7 +38,7 @@ Proxmox 上の Ubuntu VM に内蔵 GPU（Intel UHD 630）をパススルーし�
 │  │       └ shanocast     … Google Cast 受信（PC Chrome）     │  │
 │  │                                                          │  │
 │  │   systemd                                                │  │
-│  │   ├ smartmonitor-dashboard … python http.server :8080    │  │
+│  │   ├ smartmonitor-dashboard … server.py 配信+設定API :8080 │  │
 │  │   └ smartmonitor-fetch.timer … 15分毎に天気+RSS取得       │  │
 │  │       → data.json (時計はブラウザ側 JS で生成)            │  │
 │  └──────────────────────────────────────────────────────────┘ │
@@ -108,7 +108,7 @@ git pull origin claude/quirky-albattani-qe4lkd
 ### インストール後の流れ
 
 1. `setup-dashboard.sh` 実行で `http://localhost:8080` にダッシュボードが立つ
-2. `~/smartmonitor-dashboard/www/config.json` を編集（時間割・RSS・地名）→ `docs/05`
+2. 画面右下の ⚙ から 天気の地域・時間割 を編集（RSS等は `config.json`）→ `docs/05`
 3. `sudo systemctl reboot` で自動ログイン + キオスク表示を確認
 4. AirPlay/Cast は `install.sh` で導入済み。使い方/前面化調整は `docs/03`
 
@@ -147,6 +147,7 @@ dashboard/                    スタンドアロンダッシュボード本体�
   index.html / style.css / app.js
   config.json                 時間割・RSS・天気（編集して使う）
 serve/
+  server.py                   静的配信 + 設定保存API(:8080)（標準ライブラリのみ）
   fetch_data.py               天気+RSS を取得し data.json を生成（標準ライブラリのみ）
   smartmonitor-dashboard.service   配信(:8080) systemd ユニット
   smartmonitor-fetch.service/.timer 15分毎の取得

@@ -6,7 +6,68 @@
 const TZ = "Asia/Tokyo";
 const LOCALE = "ja-JP";
 
-// ---- 時計 (秒まで表示) ----
+// ---- フリップクロック ----
+// 1桁ぶんのフリップカードを生成
+function makeFlipUnit() {
+  const el = document.createElement("div");
+  el.className = "flip-unit";
+  el.innerHTML =
+    '<div class="half top"><div class="n">0</div></div>' +
+    '<div class="half bottom"><div class="n">0</div></div>' +
+    '<div class="leaf lt"><div class="n">0</div></div>' +
+    '<div class="leaf lb"><div class="n">0</div></div>';
+  const topN = el.querySelector(".half.top .n");
+  const botN = el.querySelector(".half.bottom .n");
+  const ltN = el.querySelector(".leaf.lt .n");
+  const lbN = el.querySelector(".leaf.lb .n");
+  el.dataset.val = "0";
+  // 下のリーフが起き上がり切ったら静的な下半分を新値に確定
+  el.querySelector(".leaf.lb").addEventListener("animationend", () => {
+    botN.textContent = el.dataset.val;
+    el.classList.remove("go");
+  });
+  return {
+    el,
+    set(v) {
+      v = String(v);
+      if (el.dataset.val === v) return;          // 変化なし → フリップしない
+      const old = el.dataset.val;
+      topN.textContent = v;    // 静的・上: 新値（倒れるリーフの裏に現れる）
+      botN.textContent = old;  // 静的・下: 旧値（起きるリーフが覆うまで）
+      ltN.textContent = old;   // 倒れるリーフ: 旧値の上半分
+      lbN.textContent = v;     // 起きるリーフ: 新値の下半分
+      el.dataset.val = v;
+      el.classList.remove("go");
+      void el.offsetWidth;     // アニメ再始動のためリフロー
+      el.classList.add("go");
+    },
+  };
+}
+
+let FLIP = null;
+function buildClock() {
+  const clock = document.getElementById("clock");
+  clock.innerHTML = "";
+  const units = {};
+  [["h0", "h1"], ["m0", "m1"], ["s0", "s1"]].forEach((pair, gi) => {
+    const grp = document.createElement("div");
+    grp.className = "flip-group";
+    pair.forEach((id) => {
+      const u = makeFlipUnit();
+      units[id] = u;
+      grp.appendChild(u.el);
+    });
+    clock.appendChild(grp);
+    if (gi < 2) {
+      const sep = document.createElement("div");
+      sep.className = "flip-sep";
+      sep.textContent = ":";
+      clock.appendChild(sep);
+    }
+  });
+  return units;
+}
+
 function tickClock() {
   const now = new Date();
   const parts = new Intl.DateTimeFormat(LOCALE, {
@@ -14,8 +75,13 @@ function tickClock() {
     hour12: false, timeZone: TZ,
   }).formatToParts(now);
   const get = (t) => (parts.find((p) => p.type === t) || {}).value || "00";
-  document.getElementById("time").textContent = `${get("hour")}:${get("minute")}`;
-  document.getElementById("seconds").textContent = get("second");
+  const hh = get("hour"), mm = get("minute"), ss = get("second");
+
+  if (!FLIP) FLIP = buildClock();
+  FLIP.h0.set(hh[0]); FLIP.h1.set(hh[1]);
+  FLIP.m0.set(mm[0]); FLIP.m1.set(mm[1]);
+  FLIP.s0.set(ss[0]); FLIP.s1.set(ss[1]);
+
   document.getElementById("date").textContent =
     new Intl.DateTimeFormat(LOCALE, {
       year: "numeric", month: "long", day: "numeric", weekday: "short", timeZone: TZ,

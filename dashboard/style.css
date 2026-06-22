@@ -32,28 +32,90 @@ body { display: flex; flex-direction: column; }
   border-bottom: 1px solid var(--border);
 }
 
-.clock .time-row {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  line-height: 1;
+/* --- フリップクロック --- */
+.flip-clock { display: flex; align-items: center; gap: 16px; }
+.flip-group { display: flex; gap: 8px; }
+.flip-sep {
+  font-size: 92px;
+  font-weight: 700;
+  color: var(--fg);
+  padding-bottom: 16px;
 }
-#time {
-  font-size: 150px;
+
+.flip-unit {
+  position: relative;
+  width: 92px;
+  height: 140px;
+  perspective: 600px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 2px;
 }
-#seconds {
-  font-size: 64px;
-  font-weight: 600;
-  color: var(--accent);
-  font-variant-numeric: tabular-nums;
+
+.flip-unit .half,
+.flip-unit .leaf {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  background: #1b222c;
 }
+.flip-unit .half .n,
+.flip-unit .leaf .n {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 140px;
+  line-height: 140px;
+  text-align: center;
+  font-size: 116px;
+  color: var(--fg);
+}
+
+/* 上半分 / 下半分 でグリフの見える部分をずらす */
+.flip-unit .half.top,
+.flip-unit .leaf.lt {
+  top: 0;
+  border-radius: 12px 12px 0 0;
+  border-bottom: 2px solid #0b0e13;
+  transform-origin: center bottom;
+}
+.flip-unit .half.top .n,
+.flip-unit .leaf.lt .n { top: 0; }
+
+.flip-unit .half.bottom,
+.flip-unit .leaf.lb {
+  bottom: 0;
+  border-radius: 0 0 12px 12px;
+  transform-origin: center top;
+}
+.flip-unit .half.bottom .n,
+.flip-unit .leaf.lb .n { top: -100%; }
+
+/* リーフ（動く葉）。既定は非表示 */
+.flip-unit .leaf {
+  z-index: 2;
+  opacity: 0;
+  backface-visibility: hidden;
+}
+.flip-unit .leaf.lt { z-index: 3; }
+
+.flip-unit.go .leaf.lt {
+  opacity: 1;
+  animation: fcTop 0.28s ease-in forwards;
+}
+.flip-unit.go .leaf.lb {
+  opacity: 1;
+  transform: rotateX(90deg);
+  animation: fcBottom 0.28s ease-in 0.28s forwards;
+}
+@keyframes fcTop    { to { transform: rotateX(-90deg); } }
+@keyframes fcBottom { to { transform: rotateX(0deg);  } }
+
 #date {
   font-size: 34px;
   color: var(--muted);
-  margin-top: 12px;
+  margin-top: 14px;
 }
 
 .weather { display: flex; align-items: center; gap: 40px; }

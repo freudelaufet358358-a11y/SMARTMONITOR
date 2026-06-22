@@ -35,7 +35,21 @@ bash scripts/setup-dashboard.sh
 sudo systemctl reboot
 ```
 
-## 2. 設定ファイル `config.json`
+## 2. 画面から編集（⚙ 設定パネル）★おすすめ
+
+ファイルを触らずに、**画面右下の ⚙ ボタン**から以下を編集して「保存」できる。
+
+- **天気の地域** … 主要都市プリセット（東京/札幌/大阪…）から選ぶか、地名・緯度経度を直接入力
+- **時間割** … 曜日・時限・各コマを表形式で編集（＋で曜日/時限の追加、✕で削除）
+
+保存すると配信サーバ(`server.py`)が `config.json` を更新し、天気を取り直して、
+**表示中の全ダッシュボードを自動でリロード**する（`version.txt` 監視による）。
+
+> この機能は配信を `server.py`（`setup-dashboard.sh` が導入）で行っている前提。
+> `server.py` が無い静的配信のときは、設定はブラウザの localStorage に退避されて
+> その画面にだけ反映される（時間割は反映、天気の再取得には `server.py` が必要）。
+
+## 3. 設定ファイル `config.json`（直接編集する場合）
 
 `~/smartmonitor-dashboard/www/config.json` を編集する。
 
@@ -53,7 +67,7 @@ sudo systemctl reboot
     { "name": "NHK科学", "url": "https://www.nhk.or.jp/rss/news/cat3.xml" }
   ],
   "news_max": 10,
-  "timetable": {                    // ↓ §3 参照（UNIPA は手動）
+  "timetable": {                    // ↓ §4 参照（UNIPA は手動）
     "days": ["月","火","水","木","金"],
     "periods": ["1","2","3","4","5"],
     "cells": {
@@ -76,7 +90,7 @@ SMARTMONITOR_WWW=~/smartmonitor-dashboard/www \
   python3 ~/smartmonitor-dashboard/fetch_data.py
 ```
 
-## 3. 大学の時間割（UNIPA は手動）
+## 4. 大学の時間割（UNIPA は手動）
 
 UNIPA は ICS/iCal 出力が無いため、`config.json` の `timetable.cells` に手書きする。
 
@@ -86,7 +100,7 @@ UNIPA は ICS/iCal 出力が無いため、`config.json` の `timetable.cells` �
 
 ダッシュボードは**今日の曜日の列を自動ハイライト**する（月〜金）。
 
-## 4. 運用 / トラブルシュート
+## 5. 運用 / トラブルシュート
 
 | 操作 | コマンド |
 |------|----------|
@@ -103,7 +117,7 @@ UNIPA は ICS/iCal 出力が無いため、`config.json` の `timetable.cells` �
 | 時間割の今日強調がずれる | 端末のタイムゾーン（`Asia/Tokyo`）を確認 |
 | 変更が反映されない | キャッシュ無効化のため配信再起動 + キオスク再読込（再起動が確実） |
 
-## 5. （任意）Home Assistant を停止する
+## 6. （任意）Home Assistant を停止する
 
 HA はもう使わないので、リソースを空けたい場合は停止してよい（データは消えない）:
 

@@ -1,11 +1,12 @@
 [Unit]
-Description=SmartMonitor dashboard (static HTTP server on :8080)
+Description=SmartMonitor dashboard (HTTP server + settings API on :8080)
 After=network.target
 
 [Service]
 User=@USER@
-WorkingDirectory=@WWW@
-ExecStart=/usr/bin/python3 -m http.server 8080 --bind 127.0.0.1
+WorkingDirectory=@DIR@
+Environment=SMARTMONITOR_WWW=@WWW@
+ExecStart=/usr/bin/python3 @DIR@/server.py
 Restart=always
 RestartSec=3
 

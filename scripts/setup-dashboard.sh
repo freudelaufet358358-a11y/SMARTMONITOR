@@ -47,6 +47,7 @@ else
   install -m 0644 "$REPO_ROOT/dashboard/config.json" "$WWW_DIR/config.json"
 fi
 install -m 0755 "$REPO_ROOT/serve/fetch_data.py" "$DASH_DIR/fetch_data.py"
+install -m 0755 "$REPO_ROOT/serve/server.py"     "$DASH_DIR/server.py"
 
 # ---- 2. 初回データ取得 ------------------------------------------------------
 log "初回データ取得 (天気 + RSS)..."
@@ -90,12 +91,13 @@ cat <<EOF
 ==================== ダッシュボード設定完了 ====================
 配信中:  http://localhost:8080   (systemd: smartmonitor-dashboard)
 データ:  $WWW_DIR/data.json は 15 分ごとに更新 (smartmonitor-fetch.timer)
-編集:    $WWW_DIR/config.json
+設定:    画面右下の ⚙ ボタンから 天気の地域 / 時間割 を編集して保存できる
+           (server.py が保存を受け付け、天気を取り直し、各画面を自動リロード)
+編集:    $WWW_DIR/config.json  (直接編集も可)
            - timetable ... 時間割 (UNIPA は手動)
            - feeds ......... RSS フィード
            - weather ....... 緯度経度/地名
-           - calendar_embed_url ... Google カレンダー公開埋め込みURL (任意)
-         編集後の反映:  systemctl restart smartmonitor-dashboard  (HTML側は再読込)
+         config.json を手で編集した場合の反映:  systemctl restart smartmonitor-dashboard
                         手動取得:  SMARTMONITOR_WWW=$WWW_DIR python3 $DASH_DIR/fetch_data.py
 
 確認:    sudo systemctl reboot   で自動ログイン -> キオスクに新ダッシュボードが出る

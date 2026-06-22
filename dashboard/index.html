@@ -9,7 +9,9 @@
 <body>
   <header class="topbar">
     <div class="clock">
-      <div id="time">--:--</div>
+      <div class="time-row">
+        <span id="time">--:--</span><span id="seconds">--</span>
+      </div>
       <div id="date">----年--月--日</div>
     </div>
     <div class="weather" id="weather">
@@ -23,15 +25,17 @@
       <table id="timetable"></table>
     </section>
 
-    <section class="card calendar" id="calendar-card" hidden>
-      <h2>予定</h2>
-      <iframe id="calendar-frame" src="" title="calendar"></iframe>
-    </section>
+    <aside class="rightcol">
+      <section class="card calendar" id="calendar-card" hidden>
+        <h2>予定</h2>
+        <iframe id="calendar-frame" src="" title="calendar"></iframe>
+      </section>
 
-    <section class="card news">
-      <h2>ニュース <span class="updated" id="updated"></span></h2>
-      <ul id="news"></ul>
-    </section>
+      <section class="card news">
+        <h2>ニュース <span class="updated" id="updated"></span></h2>
+        <ul id="news"></ul>
+      </section>
+    </aside>
   </main>
 
   <script src="app.js"></script>

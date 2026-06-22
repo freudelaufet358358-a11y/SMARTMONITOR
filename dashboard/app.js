@@ -6,13 +6,16 @@
 const TZ = "Asia/Tokyo";
 const LOCALE = "ja-JP";
 
-// ---- 時計 ----
+// ---- 時計 (秒まで表示) ----
 function tickClock() {
   const now = new Date();
-  document.getElementById("time").textContent =
-    new Intl.DateTimeFormat(LOCALE, {
-      hour: "2-digit", minute: "2-digit", hour12: false, timeZone: TZ,
-    }).format(now);
+  const parts = new Intl.DateTimeFormat(LOCALE, {
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hour12: false, timeZone: TZ,
+  }).formatToParts(now);
+  const get = (t) => (parts.find((p) => p.type === t) || {}).value || "00";
+  document.getElementById("time").textContent = `${get("hour")}:${get("minute")}`;
+  document.getElementById("seconds").textContent = get("second");
   document.getElementById("date").textContent =
     new Intl.DateTimeFormat(LOCALE, {
       year: "numeric", month: "long", day: "numeric", weekday: "short", timeZone: TZ,

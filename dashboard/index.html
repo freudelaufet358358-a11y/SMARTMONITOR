@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartMonitor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="clock">
+      <div id="time">--:--</div>
+      <div id="date">----年--月--日</div>
+    </div>
+    <div class="weather" id="weather">
+      <div class="muted">天気を取得中…</div>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="card timetable">
+      <h2>時間割</h2>
+      <table id="timetable"></table>
+    </section>
+
+    <section class="card calendar" id="calendar-card" hidden>
+      <h2>予定</h2>
+      <iframe id="calendar-frame" src="" title="calendar"></iframe>
+    </section>
+
+    <section class="card news">
+      <h2>ニュース <span class="updated" id="updated"></span></h2>
+      <ul id="news"></ul>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

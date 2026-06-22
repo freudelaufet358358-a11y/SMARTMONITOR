@@ -13,12 +13,12 @@ xset -dpms
 # マウスカーソルを 1 秒操作なしで隠す
 pgrep -x unclutter >/dev/null || unclutter -idle 1 &
 
-# Home Assistant が応答するまで待つ (Docker 起動直後対策)
-echo "[kiosk] waiting for Home Assistant at $URL ..."
-until curl -sf "${URL%/}/manifest.json" >/dev/null 2>&1; do
+# 表示先 (ダッシュボード) が応答するまで待つ
+echo "[kiosk] waiting for dashboard at $URL ..."
+until curl -sf -o /dev/null "$URL"; do
   sleep 2
 done
-echo "[kiosk] Home Assistant is up. launching browser."
+echo "[kiosk] dashboard is up. launching browser."
 
 # クラッシュ復元バブルを抑止
 PREF="$HOME/.config/google-chrome/Default/Preferences"

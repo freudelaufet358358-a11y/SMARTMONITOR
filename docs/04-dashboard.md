@@ -1,5 +1,8 @@
 # 04. Lovelace ダッシュボード（時計 / 時間割 / SwitchBot / RSS）
 
+> ⚠️ **この章は不採用（参考用）。** Home Assistant の Lovelace を使う版。
+> 現構成では HA を使わず [`docs/05-standalone-dashboard.md`](05-standalone-dashboard.md) を採用している。
+
 スマートモニターに表示するダッシュボードを作る。`docs/02` で各統合が入っている前提。
 
 > **📋 雛形あり：完成形に近い YAML は [`config/lovelace/dashboard.yaml`](../config/lovelace/dashboard.yaml)、

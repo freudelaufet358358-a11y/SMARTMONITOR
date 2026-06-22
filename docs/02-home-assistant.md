@@ -1,5 +1,9 @@
 # 02. Home Assistant（Docker）導入と統合設定
 
+> ⚠️ **この章は不採用（参考用）。** 現構成では Home Assistant を使わず、
+> [`docs/05-standalone-dashboard.md`](05-standalone-dashboard.md) の HA 不要ダッシュボードを採用している。
+> SwitchBot 室温/湿度/消費電力/電気代を使いたくなった場合のみ、この章に戻ること。
+
 今の Ubuntu VM 内に **HA Container（Docker 版）** を入れる。
 Ubuntu Desktop に Supervised を入れるのは不安定なので採用しない。
 

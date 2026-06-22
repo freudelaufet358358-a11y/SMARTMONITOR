@@ -1,0 +1,26 @@
+{
+  "title": "SmartMonitor",
+  "weather": {
+    "name": "東京",
+    "latitude": 35.68,
+    "longitude": 139.76,
+    "timezone": "Asia/Tokyo"
+  },
+  "feeds": [
+    { "name": "NHK主要", "url": "https://www.nhk.or.jp/rss/news/cat0.xml" },
+    { "name": "NHK科学", "url": "https://www.nhk.or.jp/rss/news/cat3.xml" }
+  ],
+  "news_max": 10,
+  "calendar_embed_url": "",
+  "timetable": {
+    "days": ["月", "火", "水", "木", "金"],
+    "periods": ["1", "2", "3", "4", "5"],
+    "cells": {
+      "1": ["線形代数", "", "英語", "物理", ""],
+      "2": ["プログラミング", "微積分", "", "物理演習", "体育"],
+      "3": ["", "情報倫理", "実験", "", "ゼミ"],
+      "4": ["第二外国語", "", "実験", "統計", ""],
+      "5": ["", "", "", "", ""]
+    }
+  }
+}

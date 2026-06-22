@@ -1,0 +1,10 @@
+[Unit]
+Description=SmartMonitor data fetch (weather + RSS -> data.json)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=@USER@
+Environment=SMARTMONITOR_WWW=@WWW@
+ExecStart=/usr/bin/python3 @DIR@/fetch_data.py

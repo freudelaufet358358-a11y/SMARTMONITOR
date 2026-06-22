@@ -1,0 +1,13 @@
+[Unit]
+Description=SmartMonitor update webhook server
+After=network.target
+
+[Service]
+User=@USER@
+EnvironmentFile=@ENVFILE@
+ExecStart=/usr/bin/python3 @DASH_DIR@/update_server.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

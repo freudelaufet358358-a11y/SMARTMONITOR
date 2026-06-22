@@ -185,6 +185,24 @@ async function loadData() {
   }
 }
 
+// ---- 自動更新（version.txt を監視して強制再読込）----
+// Webhook/定期pullで update.sh が version.txt を書き換えると、ここが検知して
+// ブラウザを location.reload() で強制再読み込みする。
+let __version = null;
+async function checkVersion() {
+  try {
+    const r = await fetch("version.txt", { cache: "no-store" });
+    if (!r.ok) return;
+    const v = (await r.text()).trim();
+    if (!v) return;
+    if (__version === null) { __version = v; return; }   // 初回は基準値を記録
+    if (v !== __version) {
+      console.log("[smartmonitor] new version detected -> reload");
+      location.reload();
+    }
+  } catch (e) { /* ネット瞬断などは無視 */ }
+}
+
 // ---- 起動 ----
 tickClock();
 setInterval(tickClock, 1000);
@@ -193,6 +211,9 @@ loadConfig();
 loadData();
 setInterval(loadData, 5 * 60 * 1000);   // 5分ごとにデータ更新
 setInterval(loadConfig, 60 * 60 * 1000); // 1時間ごとに設定/時間割の今日強調を更新
+
+checkVersion();
+setInterval(checkVersion, 7 * 1000);    // 7秒ごとに更新チェック → 検知で強制リロード
 
 // 焼き付き/メモリ対策で6時間ごとに再読み込み
 setTimeout(() => location.reload(), 6 * 60 * 60 * 1000);

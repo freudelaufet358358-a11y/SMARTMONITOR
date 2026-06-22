@@ -1,0 +1,10 @@
+[Unit]
+Description=SmartMonitor periodic auto-pull (git pull -> redeploy -> reload)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=@USER@
+EnvironmentFile=@ENVFILE@
+ExecStart=/usr/bin/bash @DASH_DIR@/update.sh

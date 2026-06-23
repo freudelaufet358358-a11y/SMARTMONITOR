@@ -14,18 +14,28 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  width: 1920px;
-  height: 1080px;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
   background: var(--bg);
   color: var(--fg);
   font-family: "Noto Sans CJK JP", "Noto Sans JP", system-ui, sans-serif;
   font-weight: 400;
 }
+body { position: relative; }
 
-/* ===== 全体グリッド ===== */
+/* ===== 全体グリッド =====
+   1920x1080 を固定キャンバスとして組み、実ビューポートに合わせて
+   アスペクト比を保ったまま中央でスケール（--scale は app.js が算出）。
+   16:9 のディスプレイなら倍率 1.0 でちょうど全画面に収まる。 */
 .dash {
-  height: 100vh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1920px;
+  height: 1080px;
+  transform: translate(-50%, -50%) scale(var(--scale, 1));
+  transform-origin: center center;
   display: grid;
   grid-template-columns: 380px 1fr 380px;
   grid-template-rows: auto 1fr;

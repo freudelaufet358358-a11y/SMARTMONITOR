@@ -419,6 +419,17 @@ async function checkVersion() {
   } catch (e) { /* */ }
 }
 
+// ===== 画面フィット（1920x1080 キャンバスを実画面サイズへ）=====
+// 実ビューポートに合わせてアスペクト比を保ったまま拡大縮小し、
+// 1920x1080 横画面でちょうど全画面（倍率1.0）に収まるようにする。
+function fitStage() {
+  const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  document.documentElement.style.setProperty("--scale", s);
+}
+fitStage();
+window.addEventListener("resize", fitStage);
+window.addEventListener("orientationchange", fitStage);
+
 // ===== 起動 =====
 document.getElementById("settings-btn").addEventListener("click", openSettings);
 document.getElementById("settings").addEventListener("click", (e) => {

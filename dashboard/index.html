@@ -7,27 +7,54 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="clock">
-      <div class="flip-clock" id="clock"></div>
-      <div id="date">----年--月--日</div>
-    </div>
-    <div class="weather" id="weather">
-      <div class="muted">天気を取得中…</div>
-    </div>
-  </header>
+  <div class="dash">
 
-  <main class="grid">
-    <section class="card timetable">
-      <h2>時間割</h2>
-      <table id="timetable"></table>
+    <!-- 左: 時計 -->
+    <section class="panel-clock">
+      <svg id="analog" class="analog" viewBox="0 0 200 200" aria-hidden="true"></svg>
+      <div class="digital">
+        <div class="dtime">
+          <span id="d-hm">--:--</span>
+          <span class="dmeta"><span id="d-ampm">AM</span><span id="d-sec">--</span></span>
+        </div>
+        <div class="ddate" id="d-date">----年--月--日</div>
+      </div>
+      <div class="greeting">
+        <span class="g-icon" id="greet-icon">☀</span>
+        <span id="greet">おはようございます！</span>
+      </div>
     </section>
 
-    <section class="card news">
-      <h2>ニュース <span class="updated" id="updated"></span></h2>
+    <!-- 中央上: 時間割 -->
+    <section class="card panel-timetable">
+      <div class="phead">
+        <svg class="picon" viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 0 1 2 2v16l-3-2-2 2-2-2-2 2-2-2-2 2V5a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 8h6M9 12h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <h2>時間割</h2>
+        <span class="prange" id="tt-range"></span>
+      </div>
+      <table id="timetable"></table>
+      <div class="tt-note" id="tt-note"></div>
+    </section>
+
+    <!-- 右上: 天気 -->
+    <section class="card panel-weather">
+      <div class="phead">
+        <svg class="picon" viewBox="0 0 24 24"><path d="M7 18h9a4 4 0 0 0 .4-8 6 6 0 0 0-11.4 1.2A3.5 3.5 0 0 0 6 18z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        <h2>天気</h2>
+      </div>
+      <div id="weather"><div class="muted">天気を取得中…</div></div>
+    </section>
+
+    <!-- 下: ニュース -->
+    <section class="card panel-news">
+      <div class="phead">
+        <svg class="picon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 9h6M7 13h10M7 16h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <h2>ニュース</h2>
+        <span class="more">もっと見る ›</span>
+      </div>
       <ul id="news"></ul>
     </section>
-  </main>
+  </div>
 
   <button id="settings-btn" class="settings-btn" title="設定" aria-label="設定">⚙</button>
   <div id="settings" class="settings-overlay" hidden>

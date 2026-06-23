@@ -50,9 +50,13 @@ vainfo   # VA-API が UHD 630 を認識しているか確認
 #!/usr/bin/env bash
 # UHD 630: VA-API の vah264dec + glimagesink でハード支援デコード
 exec uxplay -n "SmartMonitor" -nh \
+  -fs \
   -vs glimagesink \
   -vd vah264dec
 ```
+
+> `-fs` で全画面表示。iPhone を横向きにした映像は横画面いっぱいに広がり、
+> 縦向きはアスペクト比を保って左右黒帯になる。窓表示にしたい場合は `-fs` を外す。
 
 ```bash
 mkdir -p ~/casting

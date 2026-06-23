@@ -12,9 +12,10 @@ set -euo pipefail
 
 NAME="${UXPLAY_NAME:-SmartMonitor}"
 VD="${UXPLAY_VD:-}"
+FS="${UXPLAY_FS:--fs}"   # 全画面表示 (UXPLAY_FS="" で窓表示にできる)
 
 # DISPLAY が無い場合に備える (autostart 経由なら設定済み)
 export DISPLAY="${DISPLAY:-:0}"
 
-echo "[uxplay] starting AirPlay receiver as '$NAME'"
-exec uxplay -n "$NAME" -nh -vs glimagesink $VD
+echo "[uxplay] starting AirPlay receiver as '$NAME' (fullscreen=${FS:-off})"
+exec uxplay -n "$NAME" -nh $FS -vs glimagesink $VD

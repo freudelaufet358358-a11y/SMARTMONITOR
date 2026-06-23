@@ -87,31 +87,51 @@ uxplay -avdec        # ソフトデコードで動くか確認（動けば VA-AP
 ## B. Google Cast 受信（shanocast）
 
 shanocast は Openscreen ベースの Chromecast 受信機。**PC の Chrome の「キャスト」**
-（タブ/デスクトップのミラーリング）を受けられる。Docker で動かすのが簡単。
+（タブ/デスクトップのミラーリング）を受けられる。**スマホアプリの純正 Cast ボタンは
+非対応**（iPhone は AirPlay、YouTube は `youtube.com/tv` の TV コードで代替）。
 
 公式: https://github.com/rgerganov/shanocast
+（公式の配布 Docker イメージは無く、リポジトリを取得して自分でイメージをビルドする方式）
 
-### 1. 起動スクリプト `~/casting/shanocast.sh`
-
-README の最新手順に従って Docker イメージ名・オプションを確認すること。
-host ネットワーク + X11 ソケット共有が要点：
+### 1. 一度だけ：取得とビルド
 
 ```bash
-#!/usr/bin/env bash
-exec docker run --rm \
-  --network host \
-  -e DISPLAY="$DISPLAY" \
-  -v /tmp/.X11-unix:/tmp/.X11-unix \
-  --device /dev/dri \
-  ghcr.io/rgerganov/shanocast:latest
+sudo apt install -y git docker.io      # docker 未導入なら
+git clone https://github.com/rgerganov/shanocast.git ~/shanocast
+cd ~/shanocast
+./docker/build-images.sh               # イメージをビルド（数分）
 ```
+
+### 2. 受信を起動（ネットワークIFを指定）
 
 ```bash
-chmod +x ~/casting/shanocast.sh
+# デフォルトルートのインターフェース名を確認 (例: ens18 / enp0s3 / eth0)
+ip route show default
+
+# そのIF名を INTERFACE に渡して起動 (X セッション内で実行すること)
+cd ~/shanocast
+INTERFACE=ens18 ./docker/run-shanocast.sh
 ```
 
-> `--device /dev/dri` で UHD 630 のレンダリングノードを渡す。イメージ名/タグは
-> リポジトリの最新 README で確認して置き換える。
+> `run-shanocast.sh` は `--network host --privileged` で動き、`INTERFACE` 環境変数で
+> NIC を指定できる（未指定だと対話プロンプト）。X11/PulseAudio/`/dev/dri` を共有する。
+
+リポジトリ同梱の `scripts/shanocast.sh` は上記（取得・ビルド・IF自動検出・起動）を
+まとめて行うラッパー：
+
+```bash
+~/casting/shanocast.sh          # 初回はビルド、以降は起動
+# IF を明示するなら:  INTERFACE=ens18 ~/casting/shanocast.sh
+```
+
+### 3. 送信（PC の Chrome から）
+
+1. 受信側と**同じ LAN** の PC で Chrome を開く
+2. 右上メニュー ⋮ →「キャスト…」→ 一覧に出る受信先（shanocast）を選ぶ
+3. 「ソース」で **タブをキャスト** または **画面をキャスト** を選択
+
+> 一覧に出ないとき：受信が起動中か / 同一 LAN か / `INTERFACE` が正しい NIC か /
+> docker をsudoなしで実行できるか（`sudo usermod -aG docker $USER` 後に再ログイン）を確認。
 
 ---
 

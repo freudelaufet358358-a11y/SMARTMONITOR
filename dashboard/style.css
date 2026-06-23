@@ -1,4 +1,5 @@
-/* SmartMonitor dashboard — 1920x1080 横画面 (時計 / 時間割 / 天気 / ニュース) */
+/* SmartMonitor dashboard — 1920x1080 横画面に「きっちり」収める最適化版
+   画面いっぱい(100vw/100vh)に配置し、各パネル内部は高さに合わせて伸縮させる。 */
 :root {
   --bg: #0c0d11;
   --card: #161922;
@@ -14,8 +15,8 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  width: 1920px;
-  height: 1080px;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
   background: var(--bg);
   color: var(--fg);
@@ -23,142 +24,113 @@ html, body {
   font-weight: 400;
 }
 
-/* ===== 全体グリッド ===== */
+/* ===== 全体グリッド（画面を隙間なく分割）===== */
 .dash {
+  width: 100vw;
   height: 100vh;
   display: grid;
-  grid-template-columns: 380px 1fr 380px;
-  grid-template-rows: auto 1fr;
-  gap: 24px;
-  padding: 30px;
+  grid-template-columns: 360px 1fr 372px;
+  grid-template-rows: 560px 1fr;     /* 上段=時間割/天気, 下段=ニュース */
+  gap: 22px;
+  padding: 28px;
 }
 .panel-clock     { grid-column: 1; grid-row: 1 / span 2; }
 .panel-timetable { grid-column: 2; grid-row: 1; }
 .panel-weather   { grid-column: 3; grid-row: 1; }
-.panel-news      { grid-column: 2 / span 2; grid-row: 2; min-height: 0; }
+.panel-news      { grid-column: 2 / span 2; grid-row: 2; }
 
 .card {
   background: var(--card);
   border-radius: 22px;
-  padding: 26px 30px;
-  display: flex;
-  flex-direction: column;
+  padding: 22px 26px;
   min-height: 0;
+  min-width: 0;
   overflow: hidden;
 }
 
 /* パネル見出し */
-.phead { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-.phead h2 { font-size: 26px; font-weight: 600; letter-spacing: 0.02em; }
-.phead .picon { width: 26px; height: 26px; color: var(--muted); flex: none; }
-.phead .prange { color: var(--muted); font-size: 22px; font-weight: 400; }
-.phead .more { margin-left: auto; color: var(--muted); font-size: 18px; }
+.phead { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.phead h2 { font-size: 25px; font-weight: 600; letter-spacing: 0.02em; }
+.phead .picon { width: 25px; height: 25px; color: var(--muted); flex: none; }
+.phead .prange { color: var(--muted); font-size: 21px; font-weight: 400; }
+.phead .more { margin-left: auto; color: var(--muted); font-size: 17px; }
 
 /* ===== 左: 時計パネル ===== */
 .panel-clock {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 24px 18px 30px;
+  padding: 22px 16px 26px;
 }
-.analog {
-  width: 300px;
-  height: 300px;
-  margin: 18px auto 0;
-}
-.digital { margin-top: auto; padding-left: 8px; }
-.dtime { display: flex; align-items: flex-end; gap: 14px; }
+.analog { width: 282px; height: 282px; margin: 10px auto 0; flex: none; }
+.digital { margin-top: auto; padding-left: 6px; }
+.dtime { display: flex; align-items: flex-end; gap: 12px; }
 #d-hm {
-  font-size: 118px;
-  font-weight: 200;
-  line-height: 0.9;
-  letter-spacing: 0.01em;
-  font-variant-numeric: tabular-nums;
+  font-size: 104px; font-weight: 200; line-height: 0.9;
+  letter-spacing: 0.01em; font-variant-numeric: tabular-nums;
 }
-.dmeta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: 14px;
-  color: var(--muted);
-  line-height: 1.1;
-}
-#d-ampm { font-size: 24px; font-weight: 500; }
-#d-sec { font-size: 24px; font-variant-numeric: tabular-nums; }
-.ddate { font-size: 34px; font-weight: 300; margin-top: 14px; }
+.dmeta { display: flex; flex-direction: column; align-items: flex-start;
+         margin-bottom: 12px; color: var(--muted); line-height: 1.15; }
+#d-ampm { font-size: 22px; font-weight: 500; }
+#d-sec { font-size: 22px; font-variant-numeric: tabular-nums; }
+.ddate { font-size: 31px; font-weight: 300; margin-top: 12px; }
+.greeting { margin-top: 30px; padding-left: 6px; display: flex; align-items: center;
+            gap: 12px; font-size: 21px; }
+.greeting .g-icon { font-size: 23px; }
 
-.greeting {
-  margin-top: 40px;
-  padding-left: 8px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 22px;
-  color: var(--fg);
-}
-.greeting .g-icon { font-size: 24px; }
-
-/* ===== 時間割 ===== */
-#timetable { width: 100%; border-collapse: collapse; flex: 1; }
+/* ===== 時間割（テーブルが縦いっぱいに伸びる）===== */
+.panel-timetable { display: grid; grid-template-rows: auto 1fr auto; }
+#timetable { width: 100%; height: 100%; border-collapse: collapse; }
 #timetable th, #timetable td {
-  text-align: center;
-  padding: 12px 6px;
-  font-size: 21px;
+  text-align: center; padding: 6px 5px; font-size: 20px;
   border-bottom: 1px solid var(--line);
 }
-#timetable thead th {
-  color: var(--muted);
-  font-size: 19px;
-  font-weight: 500;
-  padding-bottom: 14px;
-}
-#timetable .corner { width: 92px; }
-#timetable .pcell { text-align: left; padding-left: 4px; white-space: nowrap; }
-#timetable .pcell .pno { font-size: 24px; font-weight: 600; }
-#timetable .pcell .ptime { color: var(--faint); font-size: 14px; margin-left: 8px; }
+#timetable thead th { color: var(--muted); font-size: 18px; font-weight: 500; padding-bottom: 10px; }
+#timetable .corner { width: 96px; }
+#timetable .pcell { text-align: left; padding-left: 4px; white-space: nowrap; width: 96px; }
+#timetable .pcell .pno { font-size: 22px; font-weight: 600; }
+#timetable .pcell .ptime { display: block; color: var(--faint); font-size: 13px; margin-top: 2px; }
 #timetable tbody td { color: var(--fg); }
 #timetable tbody tr:last-child th, #timetable tbody tr:last-child td { border-bottom: 0; }
 #timetable .today { background: var(--today); }
-#timetable thead th.today { border-radius: 8px 8px 0 0; }
-.tt-note { color: var(--faint); font-size: 16px; margin-top: 14px; }
+.tt-note { color: var(--faint); font-size: 15px; margin-top: 10px; }
 
-/* ===== 天気 ===== */
-.w-loc { color: var(--muted); font-size: 22px; margin-bottom: 6px; }
+/* ===== 天気（予報を下端に寄せる）===== */
+.panel-weather { display: flex; flex-direction: column; }
+#weather { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.w-loc { color: var(--muted); font-size: 21px; margin-bottom: 4px; }
 .w-now { display: flex; align-items: center; justify-content: space-between; }
-.w-temp { font-size: 92px; font-weight: 200; line-height: 1; }
-.w-temp .u { font-size: 34px; font-weight: 300; color: var(--muted); }
-.w-now .wi { width: 96px; height: 96px; }
-.w-cond { font-size: 30px; font-weight: 400; margin: 6px 0 16px; }
+.w-temp { font-size: 84px; font-weight: 200; line-height: 1; }
+.w-temp .u { font-size: 32px; font-weight: 300; color: var(--muted); }
+.w-now .wi { width: 92px; height: 92px; }
+.w-cond { font-size: 28px; font-weight: 400; margin: 4px 0 14px; }
 .w-sub { color: var(--muted); font-size: 19px; display: flex; gap: 26px;
-         padding-bottom: 18px; border-bottom: 1px solid var(--line); }
-.w-fc { display: flex; justify-content: space-between; padding-top: 18px; }
+         padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.w-fc { display: flex; justify-content: space-between; margin-top: auto; padding-top: 16px; }
 .w-fc .d { text-align: center; flex: 1; }
 .w-fc .d .wd { color: var(--muted); font-size: 18px; }
 .w-fc .d .wi { width: 42px; height: 42px; margin: 8px auto; display: block; }
 .w-fc .d .ht { font-size: 18px; }
 .w-fc .d .ht .lo { color: var(--muted); }
-.w-fc .d .pp { color: var(--accent); font-size: 16px; margin-top: 4px; }
-.w-fc .d .pp::before { content: "💧"; filter: grayscale(1) opacity(0.6); margin-right: 2px; }
+.w-fc .d .pp { color: var(--accent); font-size: 16px; margin-top: 3px; }
 
-/* 天気アイコン共通 */
 .wi { display: inline-block; vertical-align: middle; }
 
-/* ===== ニュース ===== */
-#news { list-style: none; flex: 1; min-height: 0; overflow: hidden;
-        display: flex; flex-direction: column; }
-.nitem { display: flex; gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--line);
-         align-items: center; }
-.nitem:first-child { padding-top: 4px; }
+/* ===== ニュース（3件を均等に縦いっぱい）===== */
+.panel-news { display: flex; flex-direction: column; }
+#news { list-style: none; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.nitem { flex: 1; min-height: 0; display: flex; gap: 20px; align-items: center;
+         padding: 12px 0; border-bottom: 1px solid var(--line); }
 .nitem:last-child { border-bottom: 0; }
-.nthumb { flex: none; width: 168px; height: 96px; border-radius: 12px;
+.nthumb { flex: none; width: 160px; height: 90px; border-radius: 12px;
           background-size: cover; background-position: center; background-color: var(--card2); }
 .nthumb.ph { background: linear-gradient(135deg, #1f2530, #2a3340);
              display: flex; align-items: center; justify-content: center; }
-.nthumb.ph::after { content: "📰"; font-size: 32px; filter: grayscale(1) opacity(0.5); }
+.nthumb.ph::after { content: "📰"; font-size: 30px; filter: grayscale(1) opacity(0.5); }
 .nbody { min-width: 0; flex: 1; }
-.ntitle { font-size: 24px; font-weight: 600; margin-bottom: 6px;
+.ntitle { font-size: 23px; font-weight: 600; margin-bottom: 6px;
           overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.nsum { color: var(--muted); font-size: 18px; margin-bottom: 8px;
+.nsum { color: var(--muted); font-size: 18px; margin-bottom: 7px;
         overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .nmeta { color: var(--faint); font-size: 16px; }
 .nmeta .src { margin-left: 10px; padding-left: 10px; border-left: 1px solid var(--line); }

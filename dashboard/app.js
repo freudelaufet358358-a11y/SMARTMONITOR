@@ -208,7 +208,7 @@ function newsMeta(published, feed) {
 function renderNews(items) {
   const ul = document.getElementById("news");
   if (!items || !items.length) { ul.innerHTML = '<li class="muted">ニュースなし</li>'; return; }
-  ul.innerHTML = items.slice(0, 4).map((n) => {
+  ul.innerHTML = items.slice(0, 3).map((n) => {
     const thumb = n.image
       ? `<a class="nthumb" href="${esc(n.link)}" target="_blank" rel="noreferrer" style="background-image:url('${esc(n.image)}')"></a>`
       : `<span class="nthumb ph"></span>`;
